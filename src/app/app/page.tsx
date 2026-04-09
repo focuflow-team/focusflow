@@ -1,4 +1,4 @@
-import { PomodoroTimer } from '@/components/timer/PomodoroTimer'
+import { TimerPage } from '@/components/timer/TimerPage'
 
 export default function DashboardPage() {
   return (
@@ -9,7 +9,7 @@ export default function DashboardPage() {
           포모도로 기법으로 집중력을 높이세요
         </p>
       </div>
-      <PomodoroTimer />
+      <TimerPage />
     </div>
   )
 }
