@@ -41,6 +41,12 @@ export default async function DashboardLayout({
               통계
             </Link>
             <Link
+              href="/app/pricing"
+              className="rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              플랜
+            </Link>
+            <Link
               href="/app/settings"
               className="rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
