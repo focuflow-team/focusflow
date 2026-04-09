@@ -136,6 +136,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="FocusFlow 블로그 RSS"
+          href="/api/rss"
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
