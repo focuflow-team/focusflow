@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#3b3b8c"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="white" stroke-width="24" stroke-opacity="0.3"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="white" stroke-width="20"/>
+  <!-- Clock hand pointing to ~10 o'clock position (focus/work phase) -->
+  <line x1="256" y1="256" x2="210" y2="158" stroke="white" stroke-width="16" stroke-linecap="round"/>
+  <line x1="256" y1="256" x2="316" y2="256" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="10" fill="white"/>
+</svg>

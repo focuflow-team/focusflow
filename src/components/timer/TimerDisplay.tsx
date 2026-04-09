@@ -9,16 +9,11 @@ interface TimerDisplayProps {
   phase: TimerPhase
 }
 
-const SIZE = 240
-const STROKE = 10
-const RADIUS = (SIZE - STROKE) / 2
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-
 const PHASE_COLORS: Record<TimerPhase, string> = {
-  idle: '#6366f1',
-  work: '#6366f1',
-  break: '#22c55e',
-  long_break: '#f59e0b',
+  idle: 'var(--color-primary)',
+  work: 'var(--color-focus)',
+  break: 'var(--color-break)',
+  long_break: 'var(--color-break)',
 }
 
 const PHASE_LABELS: Record<TimerPhase, string> = {
@@ -27,6 +22,12 @@ const PHASE_LABELS: Record<TimerPhase, string> = {
   break: '짧은 휴식',
   long_break: '긴 휴식',
 }
+
+// Responsive sizes: rendered at 200px on mobile, 240px on desktop via CSS container
+const SIZE = 240
+const STROKE = 10
+const RADIUS = (SIZE - STROKE) / 2
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
 export function TimerDisplay({ remaining, totalDuration, phase }: TimerDisplayProps) {
   const progress = totalDuration > 0 ? remaining / totalDuration : 1
@@ -40,12 +41,15 @@ export function TimerDisplay({ remaining, totalDuration, phase }: TimerDisplayPr
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest sm:text-sm">
         {PHASE_LABELS[phase]}
       </p>
-      <div className="relative" style={{ width: SIZE, height: SIZE }}>
+      {/* Scale down to 200px on small screens */}
+      <div
+        className="relative"
+        style={{ width: SIZE, height: SIZE }}
+      >
         <svg width={SIZE} height={SIZE} className="-rotate-90">
-          {/* Track */}
           <circle
             cx={SIZE / 2}
             cy={SIZE / 2}
@@ -53,9 +57,8 @@ export function TimerDisplay({ remaining, totalDuration, phase }: TimerDisplayPr
             fill="none"
             stroke="currentColor"
             strokeWidth={STROKE}
-            className="text-muted/20"
+            className="text-muted opacity-20"
           />
-          {/* Progress */}
           <motion.circle
             cx={SIZE / 2}
             cy={SIZE / 2}
@@ -70,13 +73,12 @@ export function TimerDisplay({ remaining, totalDuration, phase }: TimerDisplayPr
             transition={{ duration: 0.5, ease: 'linear' }}
           />
         </svg>
-        {/* Time text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
             key={timeString}
             initial={{ opacity: 0.8, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-5xl font-mono font-bold tabular-nums"
+            className="font-mono font-bold tabular-nums text-4xl sm:text-5xl"
             style={{ color }}
           >
             {timeString}

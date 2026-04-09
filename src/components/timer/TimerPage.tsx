@@ -28,7 +28,7 @@ export function TimerPage() {
           status: 'completed',
         }),
       })
-      setLastMessage('세션 완료! 휴식을 취하세요.')
+      setLastMessage('세션 완료! 잠시 쉬어가세요.')
     } catch {
       // silently ignore — timer continues regardless
     } finally {
@@ -54,7 +54,7 @@ export function TimerPage() {
   }, [reset, ambientSound])
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-center gap-8">
+    <div className="flex w-full max-w-sm flex-col items-center gap-6 sm:max-w-lg sm:gap-8">
       {/* Task name input */}
       <input
         type="text"
@@ -62,7 +62,7 @@ export function TimerPage() {
         value={taskName}
         onChange={e => setTaskName(e.target.value)}
         disabled={state.status === 'running'}
-        className="w-full max-w-sm rounded-lg border border-border bg-background px-4 py-2 text-sm text-center placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+        className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-center placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition"
       />
 
       {/* Timer circle */}
@@ -95,14 +95,14 @@ export function TimerPage() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className={`h-3 w-3 rounded-full transition-colors ${
+            className={`h-2.5 w-2.5 rounded-full transition-colors sm:h-3 sm:w-3 ${
               i < state.pomodoroCount % 4 || (state.pomodoroCount > 0 && state.pomodoroCount % 4 === 0)
                 ? 'bg-primary'
                 : 'bg-muted'
             }`}
           />
         ))}
-        <span className="ml-2 text-sm text-muted-foreground">
+        <span className="ml-1 text-xs text-muted-foreground sm:text-sm">
           총 {state.pomodoroCount}회 완료
         </span>
       </div>
@@ -123,6 +123,7 @@ export function TimerPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
+            className="w-full"
           >
             <AmbientPlayer sound={ambientSound} />
           </motion.div>
@@ -147,7 +148,7 @@ export function TimerPage() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="text-sm font-medium text-green-600 dark:text-green-400"
+            className="text-sm font-medium text-primary"
           >
             {lastMessage}
           </motion.p>
