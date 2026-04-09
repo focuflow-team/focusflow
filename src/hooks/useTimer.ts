@@ -36,6 +36,16 @@ export interface UseTimerOptions {
   onSessionComplete?: (durationMinutes: number) => void
 }
 
+const EXTENSION_STATE_KEY = 'focusflow_timer_state'
+
+function persistTimerState(state: TimerState) {
+  try {
+    localStorage.setItem(EXTENSION_STATE_KEY, JSON.stringify(state))
+  } catch {
+    // localStorage may be unavailable (SSR, private mode) — ignore
+  }
+}
+
 export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
   const [state, setState] = useState<TimerState>({
     phase: 'idle',
@@ -150,6 +160,11 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
   }, [])
+
+  // Sync timer state to localStorage so the Chrome extension can read it
+  useEffect(() => {
+    persistTimerState(state)
+  }, [state])
 
   const remaining = Math.max(0, state.totalDuration - state.elapsed)
 

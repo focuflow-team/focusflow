@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusFlow Blocker</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🎯</span>
+        <span class="logo-text">FocusFlow</span>
+      </div>
+      <a href="#" id="options-link" class="options-link" title="설정">⚙️</a>
+    </header>
+
+    <main class="main">
+      <!-- Focus mode toggle -->
+      <div class="focus-section">
+        <div class="focus-status" id="focus-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-text" id="status-text">집중 모드 꺼짐</span>
+        </div>
+        <button class="toggle-btn" id="toggle-btn">집중 시작</button>
+      </div>
+
+      <!-- Webapp timer sync status -->
+      <div class="webapp-section" id="webapp-section" style="display:none">
+        <div class="webapp-timer">
+          <span class="webapp-label">웹앱 타이머</span>
+          <span class="webapp-phase" id="webapp-phase">-</span>
+          <span class="webapp-time" id="webapp-time">-</span>
+        </div>
+      </div>
+
+      <!-- Blocked sites summary -->
+      <div class="sites-section">
+        <div class="sites-header">
+          <span class="sites-label">차단 사이트</span>
+          <span class="sites-count" id="sites-count">0개</span>
+        </div>
+        <ul class="sites-list" id="sites-list"></ul>
+        <a href="#" id="manage-sites" class="manage-link">사이트 관리 →</a>
+      </div>
+    </main>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
