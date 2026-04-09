@@ -13,6 +13,7 @@ export function PomodoroTimer() {
 
   const handleSessionComplete = useCallback(async (durationMinutes: number) => {
     setSavingSession(true)
+    const startedAt = new Date(Date.now() - durationMinutes * 60 * 1000).toISOString()
     try {
       await fetch('/api/sessions', {
         method: 'POST',
@@ -21,6 +22,17 @@ export function PomodoroTimer() {
           task_name: taskName || null,
           duration_minutes: durationMinutes,
           status: 'completed',
+          started_at: startedAt,
+        }),
+      })
+      // Fire-and-forget calendar event (no-op if not connected)
+      void fetch('/api/calendar/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskName: taskName || null,
+          startedAt,
+          durationMinutes,
         }),
       })
       setLastMessage('세션 완료! 휴식을 취하세요.')

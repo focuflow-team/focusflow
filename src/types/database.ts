@@ -137,6 +137,44 @@ export interface Database {
           }
         ]
       }
+
+      google_calendar_tokens: {
+        Row: {
+          id:            string
+          user_id:       string
+          access_token:  string
+          refresh_token: string | null
+          expires_at:    string | null
+          calendar_id:   string | null
+          created_at:    string
+          updated_at:    string
+        }
+        Insert: {
+          id?:            string
+          user_id:        string
+          access_token:   string
+          refresh_token?: string | null
+          expires_at?:    string | null
+          calendar_id?:   string | null
+          created_at?:    string
+          updated_at?:    string
+        }
+        Update: {
+          access_token?:  string
+          refresh_token?: string | null
+          expires_at?:    string | null
+          calendar_id?:   string | null
+          updated_at?:    string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'google_calendar_tokens_user_id_fkey'
+            columns: ['user_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
 
     Views: Record<string, never>
@@ -151,6 +189,7 @@ export interface Database {
 }
 
 // 편의 타입 별칭
-export type Profile      = Database['public']['Tables']['profiles']['Row']
-export type FocusSession = Database['public']['Tables']['focus_sessions']['Row']
-export type AiInsight    = Database['public']['Tables']['ai_insights']['Row']
+export type Profile               = Database['public']['Tables']['profiles']['Row']
+export type FocusSession          = Database['public']['Tables']['focus_sessions']['Row']
+export type AiInsight             = Database['public']['Tables']['ai_insights']['Row']
+export type GoogleCalendarTokens  = Database['public']['Tables']['google_calendar_tokens']['Row']
