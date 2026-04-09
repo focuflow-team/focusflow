@@ -8,6 +8,7 @@ import {
 } from 'recharts'
 import { format } from 'date-fns'
 import { Flame, Clock, Target, TrendingUp } from 'lucide-react'
+import { AICoachCard } from '@/components/ai/AICoachCard'
 
 type Period = 'day' | 'week' | 'month'
 
@@ -54,7 +55,7 @@ function formatMinutes(minutes: number): string {
   return m === 0 ? `${h}시간` : `${h}시간 ${m}분`
 }
 
-export function StatsClient() {
+export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 'free' | 'pro' | 'team' }) {
   const [period, setPeriod] = useState<Period>('week')
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -225,6 +226,9 @@ export function StatsClient() {
               </ul>
             )}
           </div>
+
+          {/* AI Coach */}
+          <AICoachCard subscriptionTier={subscriptionTier} />
         </>
       ) : (
         <div className="text-center py-20 text-muted-foreground text-sm">
