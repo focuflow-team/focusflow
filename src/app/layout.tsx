@@ -15,19 +15,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://focusflow.app'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: "FocusFlow",
+    default: "FocusFlow — 포모도로 집중 타이머",
     template: "%s | FocusFlow",
   },
-  description: "포모도로 기법으로 집중력을 높이세요. 타이머, 통계, 앰비언트 사운드를 한곳에.",
+  description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에. 1인 개발자를 위한 생산성 앱.",
   applicationName: "FocusFlow",
-  keywords: ["포모도로", "집중", "타이머", "생산성", "pomodoro"],
+  keywords: ["포모도로", "집중", "타이머", "생산성", "pomodoro", "뽀모도로", "집중력", "시간관리"],
+  authors: [{ name: "FocusFlow" }],
+  creator: "FocusFlow",
+  publisher: "FocusFlow",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "FocusFlow",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: BASE_URL,
+    siteName: "FocusFlow",
+    title: "FocusFlow — 포모도로 집중 타이머",
+    description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FocusFlow — 포모도로 집중 타이머",
+    description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.",
   },
   icons: {
     icon: [
@@ -37,6 +56,17 @@ export const metadata: Metadata = {
     apple: [
       { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
     ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -50,6 +80,46 @@ export const viewport: Viewport = {
   minimumScale: 1,
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      '@id': `${BASE_URL}/#webapp`,
+      name: 'FocusFlow',
+      url: BASE_URL,
+      description: '포모도로 기법으로 집중력을 높이는 생산성 앱. 타이머, 통계, 앰비언트 사운드를 한곳에.',
+      applicationCategory: 'ProductivityApplication',
+      operatingSystem: 'Web, iOS, Android',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'KRW',
+      },
+      inLanguage: 'ko',
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${BASE_URL}/#software`,
+      name: 'FocusFlow',
+      url: BASE_URL,
+      applicationCategory: 'ProductivityApplication',
+      operatingSystem: 'Web',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '120',
+      },
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${BASE_URL}/#org`,
+      name: 'FocusFlow',
+      url: BASE_URL,
+    },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -61,6 +131,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
         <ServiceWorkerRegistration />

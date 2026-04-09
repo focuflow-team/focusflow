@@ -8,6 +8,10 @@ import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistr
 
 export const metadata: Metadata = {
   title: '타이머',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function DashboardLayout({

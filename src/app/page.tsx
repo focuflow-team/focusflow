@@ -4,6 +4,15 @@ import { Timer, BarChart2, Waves, Smartphone } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'FocusFlow — 포모도로 집중 타이머',
+  description: '포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에. 무료로 시작하세요.',
+  openGraph: {
+    title: 'FocusFlow — 포모도로 집중 타이머',
+    description: '포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에. 무료로 시작하세요.',
+    type: 'website',
+  },
+  alternates: {
+    canonical: '/',
+  },
 }
 
 const features = [
