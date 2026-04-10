@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Sparkles, Users, Zap, ExternalLink, CheckCircle } from 'lucide-react'
+import { Sparkles, Users, Zap, CheckCircle, AlertCircle, CalendarClock } from 'lucide-react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 const TIER_INFO = {
   free: { label: 'Free', icon: <Zap className="h-4 w-4" />, color: 'text-foreground' },
@@ -13,16 +13,18 @@ const TIER_INFO = {
 
 export function BillingClient({
   subscriptionTier,
-  hasStripeCustomer,
+  nextBillingAt,
 }: {
   subscriptionTier: 'free' | 'pro' | 'team'
-  hasStripeCustomer: boolean
+  nextBillingAt: string | null
 }) {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const justUpgraded = searchParams.get('success') === 'true'
-  const [portalLoading, setPortalLoading] = useState(false)
+  const [cancelLoading, setCancelLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(justUpgraded)
+  const [confirmCancel, setConfirmCancel] = useState(false)
 
   useEffect(() => {
     if (showSuccess) {
@@ -31,25 +33,39 @@ export function BillingClient({
     }
   }, [showSuccess])
 
-  const openPortal = async () => {
-    setPortalLoading(true)
+  const handleCancel = async () => {
+    if (!confirmCancel) {
+      setConfirmCancel(true)
+      return
+    }
+
+    setCancelLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const res = await fetch('/api/payment/cancel', { method: 'POST' })
       const data = await res.json()
-      if (res.ok && data.url) {
-        window.location.href = data.url
+      if (res.ok && data.success) {
+        router.refresh()
       } else {
-        setError(data.error ?? '포털 오류가 발생했습니다.')
+        setError(data.error ?? '구독 취소 중 오류가 발생했습니다.')
       }
     } catch {
-      setError('구독 관리 포털에 접속할 수 없습니다.')
+      setError('구독 취소에 실패했습니다.')
     } finally {
-      setPortalLoading(false)
+      setCancelLoading(false)
+      setConfirmCancel(false)
     }
   }
 
   const info = TIER_INFO[subscriptionTier]
+
+  const nextBillingFormatted = nextBillingAt
+    ? new Date(nextBillingAt).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null
 
   return (
     <div className="w-full max-w-lg space-y-6">
@@ -58,17 +74,18 @@ export function BillingClient({
       {showSuccess && (
         <div className="flex items-center gap-2 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3 text-sm text-green-700 dark:text-green-300">
           <CheckCircle className="h-4 w-4 shrink-0" />
-          업그레이드 완료! Pro 기능을 이용할 수 있습니다.
+          업그레이드 완료! 결제가 성공적으로 처리되었습니다.
         </div>
       )}
 
       {error && (
-        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+        <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0" />
           {error}
         </div>
       )}
 
-      {/* Current plan card */}
+      {/* 현재 플랜 카드 */}
       <div className="rounded-xl border border-border bg-card p-5 space-y-4">
         <h2 className="text-sm font-medium text-muted-foreground">현재 플랜</h2>
         <div className="flex items-center gap-2">
@@ -91,24 +108,57 @@ export function BillingClient({
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              구독을 관리하거나 취소하려면 Stripe 포털을 이용하세요.
-            </p>
-            {hasStripeCustomer && (
-              <button
-                onClick={openPortal}
-                disabled={portalLoading}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background hover:bg-muted px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60"
+            {nextBillingFormatted && (
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <CalendarClock className="h-3.5 w-3.5" />
+                다음 결제일: {nextBillingFormatted}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/app/pricing"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background hover:bg-muted px-4 py-2 text-sm font-medium transition-colors"
               >
-                <ExternalLink className="h-4 w-4" />
-                {portalLoading ? '연결 중...' : '구독 관리 포털'}
-              </button>
+                플랜 변경
+              </Link>
+
+              {confirmCancel ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCancel}
+                    disabled={cancelLoading}
+                    className="rounded-lg bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60"
+                  >
+                    {cancelLoading ? '취소 중...' : '정말 취소하기'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmCancel(false)}
+                    className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                  >
+                    돌아가기
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleCancel}
+                  className="rounded-lg border border-destructive/30 text-destructive hover:bg-destructive/10 px-4 py-2 text-sm font-medium transition-colors"
+                >
+                  구독 취소
+                </button>
+              )}
+            </div>
+
+            {confirmCancel && (
+              <p className="text-xs text-destructive">
+                구독을 취소하면 즉시 Free 플랜으로 변경됩니다. 이미 결제한 기간 환불은 지원되지 않습니다.
+              </p>
             )}
           </div>
         )}
       </div>
 
-      {/* Pro features summary */}
+      {/* 이용 가능한 기능 */}
       {subscriptionTier !== 'free' && (
         <div className="rounded-xl border border-border bg-card p-5 space-y-3">
           <h2 className="text-sm font-medium text-muted-foreground">이용 가능한 기능</h2>

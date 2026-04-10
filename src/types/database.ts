@@ -18,44 +18,90 @@ export interface Database {
     Tables: {
       profiles: {
         Row: {
-          id:                     string
-          email:                  string
-          display_name:           string | null
-          avatar_url:             string | null
-          subscription_tier:      SubscriptionTier
-          stripe_customer_id:     string | null
-          stripe_subscription_id: string | null
-          timezone:               string
-          settings:               Json
-          created_at:             string
-          updated_at:             string
+          id:                      string
+          email:                   string
+          display_name:            string | null
+          username:                string | null
+          avatar_url:              string | null
+          subscription_tier:       SubscriptionTier
+          stripe_customer_id:      string | null
+          stripe_subscription_id:  string | null
+          portone_billing_key:     string | null
+          portone_next_billing_at: string | null
+          timezone:                string
+          settings:                Json
+          is_public:               boolean
+          weekly_streak:           number
+          total_focus_minutes:     number
+          created_at:              string
+          updated_at:              string
         }
         Insert: {
-          id:                     string
-          email:                  string
-          display_name?:          string | null
-          avatar_url?:            string | null
-          subscription_tier?:     SubscriptionTier
-          stripe_customer_id?:    string | null
+          id:                      string
+          email:                   string
+          display_name?:           string | null
+          username?:               string | null
+          avatar_url?:             string | null
+          subscription_tier?:      SubscriptionTier
+          stripe_customer_id?:     string | null
           stripe_subscription_id?: string | null
-          timezone?:              string
-          settings?:              Json
-          created_at?:            string
-          updated_at?:            string
+          portone_billing_key?:    string | null
+          portone_next_billing_at?: string | null
+          timezone?:               string
+          settings?:               Json
+          is_public?:              boolean
+          weekly_streak?:          number
+          total_focus_minutes?:    number
+          created_at?:             string
+          updated_at?:             string
         }
         Update: {
           id?:                     string
           email?:                  string
           display_name?:           string | null
+          username?:               string | null
           avatar_url?:             string | null
           subscription_tier?:      SubscriptionTier
           stripe_customer_id?:     string | null
           stripe_subscription_id?: string | null
+          portone_billing_key?:    string | null
+          portone_next_billing_at?: string | null
           timezone?:               string
           settings?:               Json
+          is_public?:              boolean
+          weekly_streak?:          number
+          total_focus_minutes?:    number
           updated_at?:             string
         }
         Relationships: []
+      }
+
+      user_follows: {
+        Row: {
+          follower_id:  string
+          following_id: string
+          created_at:   string
+        }
+        Insert: {
+          follower_id:  string
+          following_id: string
+          created_at?:  string
+        }
+        Update: Record<string, never>
+        Relationships: [
+          {
+            foreignKeyName: 'user_follows_follower_id_fkey'
+            columns: ['follower_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_follows_following_id_fkey'
+            columns: ['following_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
       }
 
       focus_sessions: {
@@ -177,7 +223,19 @@ export interface Database {
       }
     }
 
-    Views: Record<string, never>
+    Views: {
+      weekly_leaderboard: {
+        Row: {
+          user_id:         string
+          display_name:    string | null
+          username:        string | null
+          avatar_url:      string | null
+          weekly_minutes:  number
+          weekly_sessions: number
+        }
+        Relationships: []
+      }
+    }
     Functions: Record<string, never>
     Enums: {
       subscription_tier: SubscriptionTier
@@ -193,3 +251,5 @@ export type Profile               = Database['public']['Tables']['profiles']['Ro
 export type FocusSession          = Database['public']['Tables']['focus_sessions']['Row']
 export type AiInsight             = Database['public']['Tables']['ai_insights']['Row']
 export type GoogleCalendarTokens  = Database['public']['Tables']['google_calendar_tokens']['Row']
+export type UserFollow            = Database['public']['Tables']['user_follows']['Row']
+export type LeaderboardEntry      = Database['public']['Views']['weekly_leaderboard']['Row']
