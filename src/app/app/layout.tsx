@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt'
 import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration'
+import { LogoutButton } from '@/components/LogoutButton'
 
 export const metadata: Metadata = {
   title: '타이머',
@@ -45,6 +46,12 @@ export default async function DashboardLayout({
               통계
             </Link>
             <Link
+              href="/app/leaderboard"
+              className="rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              리더보드
+            </Link>
+            <Link
               href="/app/pricing"
               className="rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
@@ -57,6 +64,7 @@ export default async function DashboardLayout({
               설정
             </Link>
             <ThemeToggle />
+            <LogoutButton />
           </nav>
         </div>
       </header>
