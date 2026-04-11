@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
@@ -147,6 +148,7 @@ export default function RootLayout({
         <ThemeProvider>{children}</ThemeProvider>
         <ServiceWorkerRegistration />
         <PWAInstallPrompt />
+        <Script src="https://cdn.portone.io/v2/browser-sdk.js" strategy="afterInteractive" />
       </body>
     </html>
   );

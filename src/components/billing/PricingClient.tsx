@@ -106,16 +106,20 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
       const planLabel = plan === 'pro' ? 'Pro' : 'Team'
       const planPriceKRW = plan === 'pro' ? 6900 : 18000
 
+      // KakaoPay는 PG사 자체가 간편결제사이므로 easyPayProvider 불필요 (공식 문서 기준)
+      const isKakaoPay = selectedMethod === 'EASY_PAY_KAKAOPAY'
+      const isEasyPay = selectedMethod !== 'CARD'
+
       // 빌링키 발급 (정기결제 등록)
       const response = await PortOne.requestIssueBillingKey({
         storeId,
         channelKey,
-        billingKeyMethod: selectedMethod === 'CARD' ? 'CARD' : 'EASY_PAY',
+        billingKeyMethod: isEasyPay ? 'EASY_PAY' : 'CARD',
         issueId,
         issueName: `FocusFlow ${planLabel} 정기결제 등록`,
         displayAmount: planPriceKRW,
         currency: 'KRW',
-        ...(selectedMethod !== 'CARD' && {
+        ...(isEasyPay && !isKakaoPay && {
           easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') as never },
         }),
       })
