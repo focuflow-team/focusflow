@@ -3,8 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 import { subDays, format, getHours } from 'date-fns'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -85,6 +83,7 @@ export async function GET(request: Request) {
     const statsContext = `사용자 집중 데이터 (최근 30일): 총 ${sessions.length}세션, 평균 ${avgDuration}분, 최적 시간대: ${bestHour ? `${bestHour[0]}시` : '없음'}, 최고 요일: ${bestDay ? bestDay[0] : '없음'}`
 
     try {
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [

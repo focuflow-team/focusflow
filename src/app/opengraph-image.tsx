@@ -62,6 +62,9 @@ export default function Image() {
         {/* Headline */}
         <div
           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             fontSize: '52px',
             fontWeight: 700,
             color: '#ffffff',
@@ -71,8 +74,8 @@ export default function Image() {
             maxWidth: '900px',
           }}
         >
-          더 깊이 집중하고,
-          <br />더 많이 완성하세요
+          <span>더 깊이 집중하고,</span>
+          <span>더 많이 완성하세요</span>
         </div>
 
         {/* Subtitle */}

@@ -3,8 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 import { subDays, format, getHours } from 'date-fns'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -111,6 +109,7 @@ export async function POST(request: NextRequest) {
 `
 
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
