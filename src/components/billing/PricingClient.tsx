@@ -104,6 +104,7 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
 
       const issueId = `focusflow-billing-${plan}-${Date.now()}`
       const planLabel = plan === 'pro' ? 'Pro' : 'Team'
+      const planPriceKRW = plan === 'pro' ? 6900 : 18000
 
       // 빌링키 발급 (정기결제 등록)
       const response = await PortOne.requestIssueBillingKey({
@@ -112,6 +113,8 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
         billingKeyMethod: selectedMethod === 'CARD' ? 'CARD' : 'EASY_PAY',
         issueId,
         issueName: `FocusFlow ${planLabel} 정기결제 등록`,
+        amount: { total: planPriceKRW },
+        currency: 'KRW',
         ...(selectedMethod !== 'CARD' && {
           easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') as never },
         }),
