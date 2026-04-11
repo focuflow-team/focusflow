@@ -12,8 +12,9 @@ function verifyWebhookSignature(
   signature: string,
 ): boolean {
   const signedContent = `${webhookId}.${webhookTimestamp}.${body}`
+  const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64')
   const expected = crypto
-    .createHmac('sha256', secret)
+    .createHmac('sha256', secretBytes)
     .update(signedContent)
     .digest('base64')
 
