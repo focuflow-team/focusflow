@@ -113,7 +113,7 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
         billingKeyMethod: selectedMethod === 'CARD' ? 'CARD' : 'EASY_PAY',
         issueId,
         issueName: `FocusFlow ${planLabel} 정기결제 등록`,
-        amount: { total: planPriceKRW },
+        displayAmount: planPriceKRW,
         currency: 'KRW',
         ...(selectedMethod !== 'CARD' && {
           easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') as never },
