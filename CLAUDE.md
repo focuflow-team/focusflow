@@ -81,3 +81,10 @@ SQL 마이그레이션 파일은 `supabase/migrations/`에 순서대로 실행:
 - 커스텀 훅: `useTimer` (타이머 로직), `useAmbientSound` (앰비언트 사운드)
 - 외부 서비스 클라이언트: `src/lib/stripe.ts`, `src/lib/google-calendar.ts`, `src/lib/blog.ts`
 - `extension/` 디렉터리는 독립적인 Chrome 확장 프로그램 (Next.js 빌드에 포함되지 않음)
+
+## Skills
+
+| 스킬 | 설명 |
+|------|------|
+| `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN) |
+| `verify-auth-pages` | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수) |
