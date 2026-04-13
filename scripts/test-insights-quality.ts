@@ -604,9 +604,10 @@ async function generateInsights(openai: OpenAI, statsContext: string): Promise<I
 
 ## 각 content 작성 방식
 - **문장은 짧게. 한 문장에 하나의 사실만.**
-- **한 인사이트당 반드시 3~5문장. 150~250자. 2문장 이하면 실패.**
+- **한 인사이트당 반드시 4~6문장. 250~350자. 3문장 이하면 실패.**
 - 첫 문장: 발견한 패턴을 수치와 함께 한 줄로 (두 변수 이상)
-- 둘째 문장: 그게 왜 의미있는지 한 줄로
+- 둘째 문장: 세션 로그에서 가져온 구체적인 날짜·태스크 예시 1개 이상 포함
+- 셋째 문장: 그게 왜 의미있는지 한 줄로
 - 셋째 문장: 반례 또는 조건 한 줄로 (언제 이 패턴이 성립하고 언제 안 되는지)
 - recommendation 마지막 문장: 내일 구체적 행동 (시간 + 태스크명)
 
@@ -623,11 +624,11 @@ async function generateInsights(openai: OpenAI, statsContext: string): Promise<I
       },
       {
         role: 'user',
-        content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 짧고 명확하게, 문장마다 끊어서 작성해 주세요.`,
+        content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 문장마다 끊어서 4~6문장으로 작성해 주세요. 각 인사이트는 250자 이상이어야 합니다.`,
       },
     ],
     response_format: { type: 'json_object' },
-    max_completion_tokens: 1800,
+    max_completion_tokens: 2400,
     temperature: 0.6,
   })
 
@@ -773,7 +774,7 @@ function judgeInsights(
 
   // ── 5. 길이 보너스/페널티 ─────────────────────────────────────────────────────
   const contentLengths = insights.map((i) => [...i.content].length)
-  const shortCount = contentLengths.filter((l) => l < 150).length
+  const shortCount = contentLengths.filter((l) => l < 250).length
 
   // 최종 점수 (길이 미달 시 총점에서 감점)
   const rawTotal = (crossVariableAnalysis + accuracy + nonObviousness + actionability) / 4
@@ -784,7 +785,7 @@ function judgeInsights(
   if (crossVariableAnalysis >= 7) feedbackParts.push('교차 분석 양호')
   else feedbackParts.push('교차 분석 부족 — 단일 변수 관찰에 그침')
   if (missedPatterns.length > 0) feedbackParts.push(`놓친 핵심 패턴 ${missedPatterns.length}개`)
-  if (shortCount > 0) feedbackParts.push(`${shortCount}개 인사이트가 150자 미달`)
+  if (shortCount > 0) feedbackParts.push(`${shortCount}개 인사이트가 250자 미달`)
   if (invalidHits > 0) feedbackParts.push(`데이터에 없는 수치 ${invalidHits}개 발견`)
   if (banPenalty > 0) feedbackParts.push(`금지 표현 ${banPenalty}개 사용`)
 

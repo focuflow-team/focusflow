@@ -136,22 +136,28 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {insights.map((insight) => (
             <li
               key={insight.id}
-              className="rounded-lg border border-border bg-background p-4 space-y-2"
+              className="rounded-xl border border-border bg-background overflow-hidden"
             >
-              <div className="flex items-center gap-2">
+              {/* 헤더 */}
+              <div className="flex items-center gap-2 border-b border-border px-4 py-2.5 bg-muted/40">
                 {INSIGHT_ICONS[insight.insight_type]}
-                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                <span className="text-[11px] font-semibold text-muted-foreground tracking-wide">
                   {INSIGHT_LABELS[insight.insight_type]}
                 </span>
+                {insight.metadata?.title && (
+                  <span className="ml-auto text-xs font-semibold text-foreground">
+                    {insight.metadata.title}
+                  </span>
+                )}
               </div>
-              {insight.metadata?.title && (
-                <p className="text-sm font-semibold leading-snug">{insight.metadata.title}</p>
-              )}
-              <p className="text-xs text-muted-foreground leading-relaxed">{insight.content}</p>
+              {/* 본문 */}
+              <p className="px-4 py-3 text-xs leading-[1.75] text-foreground/80">
+                {insight.content}
+              </p>
             </li>
           ))}
         </ul>
