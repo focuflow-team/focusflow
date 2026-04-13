@@ -42,3 +42,7 @@ next-env.d.ts
 
 # Local settings
 settings.local.json
+
+# Harness: task worktrees & verify logs
+/.worktrees/
+/logs/
