@@ -16,27 +16,32 @@ export function TimerPage() {
 
   const ambientSound = useAmbientSound()
 
-  const handleSessionComplete = useCallback(async (durationMinutes: number) => {
-    setSavingSession(true)
-    try {
-      await fetch('/api/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          task_name: taskName || null,
-          duration_minutes: durationMinutes,
-          status: 'completed',
-        }),
-      })
-      setLastMessage('세션 완료! 잠시 쉬어가세요.')
-    } catch {
-      // silently ignore — timer continues regardless
-    } finally {
-      setSavingSession(false)
-    }
-  }, [taskName])
+  const handleSessionComplete = useCallback(
+    async (durationMinutes: number) => {
+      setSavingSession(true)
+      try {
+        await fetch('/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task_name: taskName || null,
+            duration_minutes: durationMinutes,
+            status: 'completed',
+          }),
+        })
+        setLastMessage('세션 완료! 잠시 쉬어가세요.')
+      } catch {
+        // silently ignore — timer continues regardless
+      } finally {
+        setSavingSession(false)
+      }
+    },
+    [taskName],
+  )
 
-  const { state, remaining, start, pause, reset } = useTimer({ onSessionComplete: handleSessionComplete })
+  const { state, remaining, start, pause, reset } = useTimer({
+    onSessionComplete: handleSessionComplete,
+  })
 
   const handleStart = useCallback(() => {
     start()
@@ -60,7 +65,7 @@ export function TimerPage() {
         type="text"
         placeholder="지금 집중할 작업을 입력하세요 (선택)"
         value={taskName}
-        onChange={e => setTaskName(e.target.value)}
+        onChange={(e) => setTaskName(e.target.value)}
         disabled={state.status === 'running'}
         className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-center placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition"
       />
@@ -96,7 +101,8 @@ export function TimerPage() {
           <div
             key={i}
             className={`h-2.5 w-2.5 rounded-full transition-colors sm:h-3 sm:w-3 ${
-              i < state.pomodoroCount % 4 || (state.pomodoroCount > 0 && state.pomodoroCount % 4 === 0)
+              i < state.pomodoroCount % 4 ||
+              (state.pomodoroCount > 0 && state.pomodoroCount % 4 === 0)
                 ? 'bg-primary'
                 : 'bg-muted'
             }`}
@@ -109,7 +115,7 @@ export function TimerPage() {
 
       {/* Ambient sound toggle */}
       <button
-        onClick={() => setShowAmbient(v => !v)}
+        onClick={() => setShowAmbient((v) => !v)}
         className={`text-xs transition-colors ${showAmbient ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
       >
         🎧 {showAmbient ? '사운드 숨기기' : '앰비언트 사운드'}

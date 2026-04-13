@@ -1,0 +1,46 @@
+name: Agent Review (optional)
+
+# 에이전트/리뷰어가 작성자가 놓치기 쉬운 영역을 자동 점검.
+# 현재는 정적 체크만 수행. Claude/Codex 연동은 별도 PR.
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  static-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: golden-principles violations grep
+        run: |
+          set -eo pipefail
+          # G-05: lazy init 위반 후보 (lib 외부에서 톱레벨 new Stripe/OpenAI)
+          BAD=$(grep -RnE "^const [a-z_]+\s*=\s*new (Stripe|OpenAI)\(" src | grep -v 'src/lib/' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::G-05 위반 의심: 외부 SDK 톱레벨 초기화"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "✅ G-05 스모크 통과"
+
+      - name: docs/agent-failures.md 갱신 확인 (결제 경계 변경 시)
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          if echo "$CHANGED" | grep -qE '^src/app/api/payment/webhook/route\.ts$'; then
+            if ! echo "$CHANGED" | grep -q '^docs/agent-failures\.md$'; then
+              echo "::warning::결제 웹훅을 수정했지만 docs/agent-failures.md 갱신이 없습니다. 회고가 필요하지 않은지 확인하세요."
+            fi
+          fi

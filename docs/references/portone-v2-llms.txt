@@ -1,0 +1,58 @@
+---
+name: PortOne V2 LLM Digest
+description: PortOne V2 SDK 필드·웹훅 규약 요약. 최근 핫픽스 반영.
+verification_status: verified
+last_verified: 2026-04-13
+owner: harness
+---
+
+# PortOne V2 Browser SDK — LLM Digest (FocusFlow)
+
+> 검증: 2026-04-13 · 패키지: `@portone/browser-sdk ^0.1`
+> 최근 결제 핫픽스 F-2026-04-11-A/B/C의 교훈을 반영.
+
+## 주요 API (프런트)
+
+### `requestIssueBillingKey(options)`
+
+빌링키 발급 (정기결제 등록).
+
+**필수 필드**:
+- `storeId`, `channelKey`
+- `billingKeyMethod`: `'EASY_PAY'` 등
+- `customer`: `{ customerId: string }`
+- **간편결제(KakaoPay/NaverPay/TossPay)인 경우**:
+  - `issueName`: 표시명
+  - `displayAmount: number` — 실제 과금 안 하지만 UI에 표시할 금액
+  - `currency: 'KRW'`
+  - (V2 Easy Pay 제약: "onetime order should have amount!" 에러가 나면 이 필드 누락)
+
+**없는 필드**:
+- ❌ `amount` — `IssueBillingKeyRequest`에는 존재하지 않음. LLM이 자주 오해. (F-2026-04-11-B)
+
+### `requestPayment(options)`
+
+일회성 결제.
+
+**필수 필드**:
+- `storeId`, `paymentId`(유니크), `orderName`, `totalAmount`, `currency`
+- `channelKey` 또는 `channelGroupId`
+
+## 서버 API
+
+### `getPayment(paymentId)` — `src/lib/portone.ts`
+
+REST 래퍼. 결제 상세 조회. `.status === 'PAID'` 여야 신뢰.
+
+## 웹훅
+
+- V2 포맷. HMAC-SHA256 base64.
+- 헤더: `webhook-id`, `webhook-timestamp`, `webhook-signature` (`v1,<base64>`).
+- 시크릿 처리: `whsec_` prefix 제거 → base64 디코드 → HMAC 키.
+- 자세한 구현: `src/app/api/payment/webhook/route.ts`, 절차: `docs/playbooks/webhook-signature-verification.md`.
+
+## FocusFlow 제약
+
+- 플랜 매핑: `{ pro: 6900, team: 18000 }` KRW (ADR-0003).
+- 금액 변경은 `src/lib/portone.ts` 단일 상수만 수정. 프런트 리터럴 금지.
+- Stripe도 공존 중 (TD-004) — 혼용 상황 주의.

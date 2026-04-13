@@ -4,7 +4,10 @@ import { createFocusSessionEvent } from '@/lib/google-calendar'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -17,7 +20,10 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!profile || profile.subscription_tier === 'free') {
-    return NextResponse.json({ error: 'Pro subscription required', code: 'PRO_REQUIRED' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Pro subscription required', code: 'PRO_REQUIRED' },
+      { status: 403 },
+    )
   }
 
   // Get calendar tokens
@@ -28,7 +34,10 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!tokenRow) {
-    return NextResponse.json({ error: 'Calendar not connected', code: 'NOT_CONNECTED' }, { status: 404 })
+    return NextResponse.json(
+      { error: 'Calendar not connected', code: 'NOT_CONNECTED' },
+      { status: 404 },
+    )
   }
 
   const body = await request.json()
@@ -39,11 +48,12 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const event = await createFocusSessionEvent(
-      tokenRow.access_token,
-      tokenRow.refresh_token,
-      { taskName, startedAt, durationMinutes, calendarId: tokenRow.calendar_id ?? 'primary' }
-    )
+    const event = await createFocusSessionEvent(tokenRow.access_token, tokenRow.refresh_token, {
+      taskName,
+      startedAt,
+      durationMinutes,
+      calendarId: tokenRow.calendar_id ?? 'primary',
+    })
     return NextResponse.json({ eventId: event.id, htmlLink: event.htmlLink })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Calendar event creation failed'

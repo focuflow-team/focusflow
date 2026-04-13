@@ -15,11 +15,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const {
     data: { user },

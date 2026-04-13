@@ -9,7 +9,9 @@ export const revalidate = 60 // 1분마다 재검증
 export default async function LeaderboardPage() {
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // 주간 리더보드 데이터
   const { data: leaderboard } = await supabase
@@ -38,9 +40,7 @@ export default async function LeaderboardPage() {
   }
 
   // 현재 사용자의 이번 주 순위
-  const myRank = user
-    ? (leaderboard ?? []).findIndex((e) => e.user_id === user.id) + 1
-    : 0
+  const myRank = user ? (leaderboard ?? []).findIndex((e) => e.user_id === user.id) + 1 : 0
 
   return (
     <LeaderboardClient

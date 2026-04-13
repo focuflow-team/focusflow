@@ -6,7 +6,9 @@ export const metadata: Metadata = { title: '설정' }
 
 export default async function SettingsPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   let subscriptionTier: 'free' | 'pro' | 'team' = 'free'
   let calendarConnected = false
@@ -24,9 +26,6 @@ export default async function SettingsPage() {
   }
 
   return (
-    <SettingsClient
-      subscriptionTier={subscriptionTier}
-      calendarConnected={calendarConnected}
-    />
+    <SettingsClient subscriptionTier={subscriptionTier} calendarConnected={calendarConnected} />
   )
 }

@@ -4,7 +4,10 @@ import { getStripe, STRIPE_PLANS } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -35,13 +38,11 @@ export async function POST(request: NextRequest) {
     })
     customerId = customer.id
 
-    await supabase
-      .from('profiles')
-      .update({ stripe_customer_id: customerId })
-      .eq('id', user.id)
+    await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id)
   }
 
-  const origin = request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const origin =
+    request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const session = await getStripe().checkout.sessions.create({
     customer: customerId,

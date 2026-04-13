@@ -25,15 +25,16 @@ export async function GET(request: NextRequest) {
     const supabase = createServiceClient()
 
     // Upsert tokens
-    await supabase
-      .from('google_calendar_tokens')
-      .upsert({
+    await supabase.from('google_calendar_tokens').upsert(
+      {
         user_id: state,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token ?? null,
         expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : null,
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' })
+      },
+      { onConflict: 'user_id' },
+    )
 
     return NextResponse.redirect(`${origin}/app/settings?calendar_connected=true`)
   } catch {

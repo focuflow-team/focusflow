@@ -82,9 +82,7 @@ export default function BlogPage() {
                   <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors sm:text-2xl">
                     {post.title}
                   </h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">
-                    {post.description}
-                  </p>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{post.description}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     <div className="flex flex-wrap gap-2">
                       {post.tags.slice(0, 3).map((tag) => (

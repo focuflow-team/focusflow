@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { startOfDay, subDays, subMonths, format, getHours, differenceInCalendarDays } from 'date-fns'
+import {
+  startOfDay,
+  subDays,
+  subMonths,
+  format,
+  getHours,
+  differenceInCalendarDays,
+} from 'date-fns'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -90,7 +100,7 @@ export async function GET(request: NextRequest) {
   let streak = 0
   if (allSessions && allSessions.length > 0) {
     const sessionDays = new Set(
-      allSessions.map(s => format(new Date(s.started_at), 'yyyy-MM-dd'))
+      allSessions.map((s) => format(new Date(s.started_at), 'yyyy-MM-dd')),
     )
     const today = format(now, 'yyyy-MM-dd')
     let cursor = now

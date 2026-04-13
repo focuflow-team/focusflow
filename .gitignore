@@ -46,3 +46,4 @@ settings.local.json
 # Harness: task worktrees & verify logs
 /.worktrees/
 /logs/
+

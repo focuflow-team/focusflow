@@ -6,7 +6,10 @@ import { deleteBillingKey } from '@/lib/portone'
 // 구독을 취소합니다 (빌링키 삭제 + 플랜을 free로 변경)
 export async function POST() {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

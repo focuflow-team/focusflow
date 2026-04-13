@@ -1,0 +1,35 @@
+name: Drift Detector
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # 매주 월요일 00:00 UTC
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run drift detector
+        id: drift
+        continue-on-error: true
+        run: npx tsx scripts/drift-detector.ts | tee drift-report.txt
+      - name: Open cleanup issue on findings
+        if: steps.drift.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const report = fs.readFileSync('drift-report.txt', 'utf8')
+            const title = `Drift detector findings — ${new Date().toISOString().slice(0,10)}`
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: '```\n' + report.slice(0, 60000) + '\n```\n\n관련: `docs/agent-failures.md`, `docs/golden-principles.md`.'
+            })

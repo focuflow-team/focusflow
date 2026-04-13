@@ -43,7 +43,9 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, display_name, username, avatar_url, is_public, total_focus_minutes, weekly_streak, created_at')
+    .select(
+      'id, display_name, username, avatar_url, is_public, total_focus_minutes, weekly_streak, created_at',
+    )
     .eq('username', username)
     .single()
 
@@ -69,9 +71,7 @@ export default async function PublicProfilePage({ params }: Props) {
   weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1)
   weekStart.setHours(0, 0, 0, 0)
 
-  const weekSessions = sessions?.filter(
-    (s) => new Date(s.started_at) >= weekStart
-  ) ?? []
+  const weekSessions = sessions?.filter((s) => new Date(s.started_at) >= weekStart) ?? []
   const weekMinutes = weekSessions.reduce((sum, s) => sum + s.duration_minutes, 0)
 
   // 최근 7일 히트맵 데이터
@@ -81,11 +81,12 @@ export default async function PublicProfilePage({ params }: Props) {
     return d.toISOString().split('T')[0]
   })
 
-  const sessionsByDay = sessions?.reduce<Record<string, number>>((acc, s) => {
-    const day = s.started_at.split('T')[0]
-    acc[day] = (acc[day] ?? 0) + s.duration_minutes
-    return acc
-  }, {}) ?? {}
+  const sessionsByDay =
+    sessions?.reduce<Record<string, number>>((acc, s) => {
+      const day = s.started_at.split('T')[0]
+      acc[day] = (acc[day] ?? 0) + s.duration_minutes
+      return acc
+    }, {}) ?? {}
 
   const maxDayMinutes = Math.max(...last7Days.map((d) => sessionsByDay[d] ?? 0), 1)
 
@@ -93,7 +94,9 @@ export default async function PublicProfilePage({ params }: Props) {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border/50">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link href="/" className="font-bold tracking-tight">FocusFlow</Link>
+          <Link href="/" className="font-bold tracking-tight">
+            FocusFlow
+          </Link>
         </div>
       </header>
 
@@ -110,14 +113,16 @@ export default async function PublicProfilePage({ params }: Props) {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold">
-                {profile.display_name ?? profile.username}
-              </h1>
+              <h1 className="text-xl font-bold">{profile.display_name ?? profile.username}</h1>
               {profile.username && profile.display_name && (
                 <p className="text-sm text-muted-foreground">@{profile.username}</p>
               )}
               <p className="text-xs text-muted-foreground mt-1">
-                {new Date(profile.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}부터 사용 중
+                {new Date(profile.created_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: 'long',
+                })}
+                부터 사용 중
               </p>
             </div>
           </div>
@@ -153,7 +158,11 @@ export default async function PublicProfilePage({ params }: Props) {
               {last7Days.map((day) => {
                 const mins = sessionsByDay[day] ?? 0
                 const intensity = Math.round((mins / maxDayMinutes) * 4)
-                const label = new Date(day).toLocaleDateString('ko-KR', { weekday: 'short', month: 'numeric', day: 'numeric' })
+                const label = new Date(day).toLocaleDateString('ko-KR', {
+                  weekday: 'short',
+                  month: 'numeric',
+                  day: 'numeric',
+                })
                 const colors = [
                   'bg-muted',
                   'bg-purple-200 dark:bg-purple-900',
@@ -162,7 +171,11 @@ export default async function PublicProfilePage({ params }: Props) {
                   'bg-purple-500',
                 ]
                 return (
-                  <div key={day} className="flex-1 flex flex-col items-center gap-1.5" title={`${label}: ${formatMinutes(mins)}`}>
+                  <div
+                    key={day}
+                    className="flex-1 flex flex-col items-center gap-1.5"
+                    title={`${label}: ${formatMinutes(mins)}`}
+                  >
                     <div className={`w-full aspect-square rounded-md ${colors[intensity]}`} />
                     <span className="text-[10px] text-muted-foreground">
                       {new Date(day).toLocaleDateString('ko-KR', { weekday: 'narrow' })}
@@ -171,9 +184,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 )
               })}
             </div>
-            <p className="text-xs text-muted-foreground">
-              색이 진할수록 집중 시간이 길어요
-            </p>
+            <p className="text-xs text-muted-foreground">색이 진할수록 집중 시간이 길어요</p>
           </div>
 
           {/* CTA */}
