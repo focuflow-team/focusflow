@@ -51,10 +51,12 @@ export default async function SharePage({ params }: Props) {
 
   const { data: session } = await supabase
     .from('focus_sessions')
-    .select(`
+    .select(
+      `
       id, duration_minutes, task_name, status, started_at, ended_at,
       profiles!inner(display_name, username, avatar_url, is_public)
-    `)
+    `,
+    )
     .eq('id', sessionId)
     .single()
 
@@ -70,9 +72,7 @@ export default async function SharePage({ params }: Props) {
         <ShareCardClient session={session} />
 
         <div className="text-center space-y-3">
-          <p className="text-sm text-muted-foreground">
-            FocusFlow로 집중력을 키워보세요
-          </p>
+          <p className="text-sm text-muted-foreground">FocusFlow로 집중력을 키워보세요</p>
           <Link
             href="/signup"
             className="inline-flex rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"

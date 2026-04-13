@@ -1,0 +1,27 @@
+---
+name: Stripe Webhook LLM Digest
+description: Stripe 웹훅 raw body·시크릿 처리 요약
+verification_status: verified
+last_verified: 2026-04-13
+owner: harness
+---
+
+# Stripe Webhook — LLM Digest (FocusFlow)
+
+> 검증: 2026-04-13 · 패키지: `stripe ^22`, `@stripe/stripe-js ^9`
+
+## 핸들러: `src/app/api/stripe/webhook/route.ts`
+
+- raw body 필요: `await request.text()` → `stripe.webhooks.constructEvent(body, sig, secret)`
+- 헤더: `stripe-signature`
+- 환경변수: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+
+## 플랜/가격 매핑
+
+- Stripe Price ID로 매핑 — `src/lib/stripe.ts` 내 상수.
+- PortOne과 중복 (TD-004), 장기적으로 통합 예정.
+
+## 공통 실수
+
+- body 파싱 후 검증 → 서명 실패. 반드시 raw text 먼저.
+- 모듈 톱레벨에서 `new Stripe(process.env.STRIPE_SECRET_KEY!)` → 빌드 환경에서 env 없으면 터짐. lazy init 사용 (F-2026-04-11-D 교훈).

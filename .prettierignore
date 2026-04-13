@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+extension
+public
+src/types/database.ts
+package-lock.json
+content/**/*.mdx

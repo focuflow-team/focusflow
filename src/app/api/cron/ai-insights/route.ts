@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, processed: 0 })
   }
 
-  const uniqueUserIds = [...new Set(activeUsers.map(r => r.user_id))]
+  const uniqueUserIds = [...new Set(activeUsers.map((r) => r.user_id))]
 
   // Filter to Pro/Team users
   const { data: proProfiles } = await supabase
@@ -77,7 +77,9 @@ export async function GET(request: Request) {
     }
 
     const avgDuration = Math.round(totalMinutes / sessions.length)
-    const bestHour = Object.entries(hourlyMap).sort((a, b) => b[1].totalMinutes - a[1].totalMinutes)[0]
+    const bestHour = Object.entries(hourlyMap).sort(
+      (a, b) => b[1].totalMinutes - a[1].totalMinutes,
+    )[0]
     const bestDay = Object.entries(dailyMap).sort((a, b) => b[1] - a[1])[0]
 
     const statsContext = `사용자 집중 데이터 (최근 30일): 총 ${sessions.length}세션, 평균 ${avgDuration}분, 최적 시간대: ${bestHour ? `${bestHour[0]}시` : '없음'}, 최고 요일: ${bestDay ? bestDay[0] : '없음'}`
@@ -103,7 +105,7 @@ export async function GET(request: Request) {
         ? parsed
         : (parsed.insights ?? parsed.items ?? [])
 
-      const rows = items.slice(0, 3).map(item => ({
+      const rows = items.slice(0, 3).map((item) => ({
         user_id: userId,
         insight_type: (['pattern_analysis', 'recommendation', 'daily_summary'].includes(item.type)
           ? item.type

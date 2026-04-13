@@ -81,7 +81,8 @@ function getResult(score: number): Result {
     return {
       title: '집중력 마스터',
       emoji: '🏆',
-      description: '탁월한 집중력을 갖고 있습니다! 이미 생산성 전문가 수준이에요. FocusFlow의 AI 분석으로 더욱 정교하게 최적화해보세요.',
+      description:
+        '탁월한 집중력을 갖고 있습니다! 이미 생산성 전문가 수준이에요. FocusFlow의 AI 분석으로 더욱 정교하게 최적화해보세요.',
       tips: [
         'AI 코치로 집중 피크 시간을 더 정밀하게 파악하세요',
         '팀 리더보드로 동료들과 생산성을 공유해보세요',
@@ -94,7 +95,8 @@ function getResult(score: number): Result {
     return {
       title: '집중력 중급자',
       emoji: '⚡',
-      description: '평균 이상의 집중력을 갖고 있어요! 몇 가지 습관만 개선하면 훨씬 더 높은 생산성을 달성할 수 있습니다.',
+      description:
+        '평균 이상의 집중력을 갖고 있어요! 몇 가지 습관만 개선하면 훨씬 더 높은 생산성을 달성할 수 있습니다.',
       tips: [
         '포모도로 기법(25분 집중 + 5분 휴식)으로 집중 사이클을 잡아보세요',
         '집중 시간에는 스마트폰을 다른 방에 두어보세요',
@@ -107,7 +109,8 @@ function getResult(score: number): Result {
     return {
       title: '집중력 개선 필요',
       emoji: '🌱',
-      description: '집중력을 키울 여지가 많이 있어요! 걱정 마세요. FocusFlow로 작은 습관부터 시작하면 2주 내에 큰 변화를 느낄 수 있습니다.',
+      description:
+        '집중력을 키울 여지가 많이 있어요! 걱정 마세요. FocusFlow로 작은 습관부터 시작하면 2주 내에 큰 변화를 느낄 수 있습니다.',
       tips: [
         '처음에는 15분 집중 세션으로 시작해 점차 늘려가세요',
         '집중할 때 앰비언트 사운드를 켜면 산만함이 줄어들어요',
@@ -171,7 +174,7 @@ export function FocusTestClient() {
     }
   }
 
-  const progress = ((currentQ) / questions.length) * 100
+  const progress = (currentQ / questions.length) * 100
 
   if (showResult) {
     return (
@@ -179,7 +182,9 @@ export function FocusTestClient() {
         {/* Header */}
         <header className="border-b border-border/50">
           <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-            <Link href="/" className="font-bold tracking-tight">FocusFlow</Link>
+            <Link href="/" className="font-bold tracking-tight">
+              FocusFlow
+            </Link>
           </div>
         </header>
 
@@ -204,9 +209,7 @@ export function FocusTestClient() {
                 />
               </div>
 
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {result.description}
-              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.description}</p>
             </div>
 
             {/* Tips */}
@@ -278,7 +281,9 @@ export function FocusTestClient() {
       {/* Header */}
       <header className="border-b border-border/50">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link href="/" className="font-bold tracking-tight">FocusFlow</Link>
+          <Link href="/" className="font-bold tracking-tight">
+            FocusFlow
+          </Link>
           <span className="text-sm text-muted-foreground">
             {currentQ + 1} / {questions.length}
           </span>
@@ -301,17 +306,14 @@ export function FocusTestClient() {
               <div className="text-4xl">🧠</div>
               <h1 className="text-xl font-bold">집중력 테스트</h1>
               <p className="text-sm text-muted-foreground">
-                6가지 질문으로 집중력 수준을 파악하고 맞춤 전략을 받아보세요.
-                2분이면 충분합니다.
+                6가지 질문으로 집중력 수준을 파악하고 맞춤 전략을 받아보세요. 2분이면 충분합니다.
               </p>
             </div>
           )}
 
           {/* Question */}
           <div className="space-y-5">
-            <h2 className="text-base font-semibold leading-relaxed">
-              {question.text}
-            </h2>
+            <h2 className="text-base font-semibold leading-relaxed">{question.text}</h2>
 
             <div className="space-y-3">
               {question.options.map((option) => (
@@ -325,11 +327,13 @@ export function FocusTestClient() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 ${
-                      selectedOption === option.score
-                        ? 'border-primary bg-primary'
-                        : 'border-border'
-                    }`}>
+                    <div
+                      className={`flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 ${
+                        selectedOption === option.score
+                          ? 'border-primary bg-primary'
+                          : 'border-border'
+                      }`}
+                    >
                       {selectedOption === option.score && (
                         <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                       )}

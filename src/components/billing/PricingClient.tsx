@@ -54,12 +54,7 @@ const PLANS: Plan[] = [
     priceKRW: '₩18,000',
     description: '팀 생산성 관리',
     icon: <Users className="h-5 w-5 text-blue-500" />,
-    features: [
-      'Pro 모든 기능',
-      '팀 공유 통계',
-      '최대 5인 팀',
-      '팀 대시보드',
-    ],
+    features: ['Pro 모든 기능', '팀 공유 통계', '최대 5인 팀', '팀 대시보드'],
   },
 ]
 
@@ -127,7 +122,8 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
       if ('code' in response && response.code) {
         // 사용자가 취소하거나 오류 발생
         if (response.code !== 'PORTONE_REQUEST_CANCELLED') {
-          const msg = 'message' in response ? (response.message as string) : '결제 등록에 실패했습니다.'
+          const msg =
+            'message' in response ? (response.message as string) : '결제 등록에 실패했습니다.'
           setError(msg)
         }
         return
@@ -223,9 +219,7 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-bold">{plan.priceKRW}</span>
                   {plan.key !== 'free' && (
-                    <span className="text-xs text-muted-foreground">
-                      /월 ({plan.price})
-                    </span>
+                    <span className="text-xs text-muted-foreground">/월 ({plan.price})</span>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">{plan.description}</p>
@@ -255,15 +249,11 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
                     isCurrent
                       ? 'border border-border bg-background text-muted-foreground cursor-default'
                       : plan.highlight
-                      ? 'bg-purple-500 hover:bg-purple-600 text-white'
-                      : 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                        ? 'bg-purple-500 hover:bg-purple-600 text-white'
+                        : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                   }`}
                 >
-                  {loading === plan.key
-                    ? '처리 중...'
-                    : isCurrent
-                    ? '현재 플랜'
-                    : '구독하기'}
+                  {loading === plan.key ? '처리 중...' : isCurrent ? '현재 플랜' : '구독하기'}
                 </button>
               )}
             </div>

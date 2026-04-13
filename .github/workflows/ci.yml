@@ -2,31 +2,71 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, develop]
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, develop]
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check
-        run: npx tsc --noEmit
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Prettier (check)
+        run: npx prettier --check .
+        continue-on-error: true
+
+      - name: ESLint (non-blocking until TD-007 resolved)
+        run: npm run lint
+        continue-on-error: true
+
+      - name: dependency-cruiser (ADR-0001/0003 경계 강제)
+        run: npm run depcruise
+
+      - name: Drift detector
+        run: npm run drift
+        continue-on-error: true
 
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  escalation-check:
+    # 결제·인증·마이그레이션 경계 변경 시 라벨 권고
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect high-risk paths
+        id: detect
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -qE '^(src/app/api/payment/|src/app/api/stripe/|src/components/billing/|src/lib/(portone|stripe)\.ts|src/lib/supabase/|middleware\.ts|supabase/migrations/)'; then
+            echo "high_risk=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "high_risk=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Warn (high-risk change)
+        if: steps.detect.outputs.high_risk == 'true'
+        run: |
+          echo "::warning::결제/인증/Supabase/마이그레이션 경계를 변경합니다. docs/escalation-policy.md 확인 필요."

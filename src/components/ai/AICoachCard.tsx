@@ -112,7 +112,7 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
         </div>
       ) : loading ? (
         <div className="space-y-2">
-          {[0, 1, 2].map(i => (
+          {[0, 1, 2].map((i) => (
             <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
           ))}
         </div>
@@ -123,12 +123,17 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
       ) : insights.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">아직 생성된 인사이트가 없습니다.</p>
-          <p className="text-xs text-muted-foreground">최소 3개의 세션을 완료한 후 &apos;새 분석&apos;을 눌러보세요.</p>
+          <p className="text-xs text-muted-foreground">
+            최소 3개의 세션을 완료한 후 &apos;새 분석&apos;을 눌러보세요.
+          </p>
         </div>
       ) : (
         <ul className="space-y-2">
-          {insights.map(insight => (
-            <li key={insight.id} className="rounded-lg border border-border bg-background p-3 space-y-1">
+          {insights.map((insight) => (
+            <li
+              key={insight.id}
+              className="rounded-lg border border-border bg-background p-3 space-y-1"
+            >
               <div className="flex items-center gap-1.5">
                 {INSIGHT_ICONS[insight.insight_type]}
                 <span className="text-[10px] text-muted-foreground font-medium">

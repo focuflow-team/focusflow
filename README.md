@@ -15,17 +15,17 @@
 
 ## 기술 스택
 
-| 카테고리 | 기술 |
-|---|---|
-| 프레임워크 | Next.js 16, React 19 |
-| 언어 | TypeScript |
-| 스타일링 | Tailwind CSS v4, shadcn/ui |
-| 데이터베이스 | Supabase (PostgreSQL) |
-| 인증 | Supabase Auth |
-| 결제 | Stripe |
-| AI | OpenAI API |
-| 캘린더 | Google Calendar API |
-| 배포 | Vercel |
+| 카테고리     | 기술                       |
+| ------------ | -------------------------- |
+| 프레임워크   | Next.js 16, React 19       |
+| 언어         | TypeScript                 |
+| 스타일링     | Tailwind CSS v4, shadcn/ui |
+| 데이터베이스 | Supabase (PostgreSQL)      |
+| 인증         | Supabase Auth              |
+| 결제         | Stripe                     |
+| AI           | OpenAI API                 |
+| 캘린더       | Google Calendar API        |
+| 배포         | Vercel                     |
 
 ## 사전 요구사항
 
@@ -78,6 +78,7 @@ supabase db push
 ```
 
 또는 Supabase 대시보드 > SQL Editor에서 아래 파일들을 순서대로 실행합니다:
+
 1. `supabase/migrations/001_initial_schema.sql`
 2. `supabase/migrations/002_social_features.sql`
 
@@ -122,23 +123,23 @@ CRON_SECRET=your-cron-secret
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 ```
 
-| 변수명 | 설명 |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) 키 |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role 키 (서버 전용, 절대 클라이언트에 노출 금지) |
-| `OPENAI_API_KEY` | OpenAI API 키 (AI 집중 분석 기능) |
-| `STRIPE_SECRET_KEY` | Stripe 시크릿 키 (서버 전용) |
-| `STRIPE_WEBHOOK_SECRET` | Stripe 웹훅 검증 시크릿 |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe 퍼블리셔블 키 (클라이언트) |
-| `STRIPE_PRO_PRICE_ID` | Stripe Pro 플랜 Price ID |
-| `STRIPE_TEAM_PRICE_ID` | Stripe Team 플랜 Price ID |
-| `GOOGLE_CLIENT_ID` | Google OAuth 클라이언트 ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth 클라이언트 시크릿 |
-| `GOOGLE_REDIRECT_URI` | Google OAuth 리다이렉트 URI |
-| `NEXT_PUBLIC_APP_URL` | 앱의 공개 URL (로컬: `http://localhost:3000`) |
-| `CRON_SECRET` | Cron 작업 인증 시크릿 |
-| `NEXT_PUBLIC_POSTHOG_KEY` | PostHog 분석 키 (선택 사항) |
+| 변수명                               | 설명                                                              |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Supabase 프로젝트 URL                                             |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anon (public) 키                                         |
+| `SUPABASE_SERVICE_ROLE_KEY`          | Supabase service role 키 (서버 전용, 절대 클라이언트에 노출 금지) |
+| `OPENAI_API_KEY`                     | OpenAI API 키 (AI 집중 분석 기능)                                 |
+| `STRIPE_SECRET_KEY`                  | Stripe 시크릿 키 (서버 전용)                                      |
+| `STRIPE_WEBHOOK_SECRET`              | Stripe 웹훅 검증 시크릿                                           |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe 퍼블리셔블 키 (클라이언트)                                 |
+| `STRIPE_PRO_PRICE_ID`                | Stripe Pro 플랜 Price ID                                          |
+| `STRIPE_TEAM_PRICE_ID`               | Stripe Team 플랜 Price ID                                         |
+| `GOOGLE_CLIENT_ID`                   | Google OAuth 클라이언트 ID                                        |
+| `GOOGLE_CLIENT_SECRET`               | Google OAuth 클라이언트 시크릿                                    |
+| `GOOGLE_REDIRECT_URI`                | Google OAuth 리다이렉트 URI                                       |
+| `NEXT_PUBLIC_APP_URL`                | 앱의 공개 URL (로컬: `http://localhost:3000`)                     |
+| `CRON_SECRET`                        | Cron 작업 인증 시크릿                                             |
+| `NEXT_PUBLIC_POSTHOG_KEY`            | PostHog 분석 키 (선택 사항)                                       |
 
 ---
 

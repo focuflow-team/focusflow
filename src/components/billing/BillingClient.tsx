@@ -7,8 +7,16 @@ import { useSearchParams, useRouter } from 'next/navigation'
 
 const TIER_INFO = {
   free: { label: 'Free', icon: <Zap className="h-4 w-4" />, color: 'text-foreground' },
-  pro: { label: 'Pro', icon: <Sparkles className="h-4 w-4 text-purple-500" />, color: 'text-purple-600 dark:text-purple-400' },
-  team: { label: 'Team', icon: <Users className="h-4 w-4 text-blue-500" />, color: 'text-blue-600 dark:text-blue-400' },
+  pro: {
+    label: 'Pro',
+    icon: <Sparkles className="h-4 w-4 text-purple-500" />,
+    color: 'text-purple-600 dark:text-purple-400',
+  },
+  team: {
+    label: 'Team',
+    icon: <Users className="h-4 w-4 text-blue-500" />,
+    color: 'text-blue-600 dark:text-blue-400',
+  },
 }
 
 export function BillingClient({
@@ -151,7 +159,8 @@ export function BillingClient({
 
             {confirmCancel && (
               <p className="text-xs text-destructive">
-                구독을 취소하면 즉시 Free 플랜으로 변경됩니다. 이미 결제한 기간 환불은 지원되지 않습니다.
+                구독을 취소하면 즉시 Free 플랜으로 변경됩니다. 이미 결제한 기간 환불은 지원되지
+                않습니다.
               </p>
             )}
           </div>
@@ -173,8 +182,7 @@ export function BillingClient({
             </li>
             {subscriptionTier === 'team' && (
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Users className="h-3.5 w-3.5 text-blue-500" />
-                팀 공유 통계 (최대 5인)
+                <Users className="h-3.5 w-3.5 text-blue-500" />팀 공유 통계 (최대 5인)
               </li>
             )}
           </ul>

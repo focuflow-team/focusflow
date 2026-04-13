@@ -13,10 +13,7 @@ function verifyWebhookSignature(
 ): boolean {
   const signedContent = `${webhookId}.${webhookTimestamp}.${body}`
   const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64')
-  const expected = crypto
-    .createHmac('sha256', secretBytes)
-    .update(signedContent)
-    .digest('base64')
+  const expected = crypto.createHmac('sha256', secretBytes).update(signedContent).digest('base64')
 
   // PortOne V2 서명은 "v1,<base64>" 형식
   const signatures = signature.split(' ')

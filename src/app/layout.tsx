@@ -1,61 +1,62 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
-import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration'
+import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt'
+import './globals.css'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://focusflow.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "FocusFlow — 포모도로 집중 타이머",
-    template: "%s | FocusFlow",
+    default: 'FocusFlow — 포모도로 집중 타이머',
+    template: '%s | FocusFlow',
   },
-  description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에. 1인 개발자를 위한 생산성 앱.",
-  applicationName: "FocusFlow",
-  keywords: ["포모도로", "집중", "타이머", "생산성", "pomodoro", "뽀모도로", "집중력", "시간관리"],
-  authors: [{ name: "FocusFlow" }],
-  creator: "FocusFlow",
-  publisher: "FocusFlow",
-  manifest: "/manifest.webmanifest",
+  description:
+    '포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에. 1인 개발자를 위한 생산성 앱.',
+  applicationName: 'FocusFlow',
+  keywords: ['포모도로', '집중', '타이머', '생산성', 'pomodoro', '뽀모도로', '집중력', '시간관리'],
+  authors: [{ name: 'FocusFlow' }],
+  creator: 'FocusFlow',
+  publisher: 'FocusFlow',
+  manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "FocusFlow",
+    statusBarStyle: 'default',
+    title: 'FocusFlow',
   },
   openGraph: {
-    type: "website",
-    locale: "ko_KR",
+    type: 'website',
+    locale: 'ko_KR',
     url: BASE_URL,
-    siteName: "FocusFlow",
-    title: "FocusFlow — 포모도로 집중 타이머",
-    description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.",
+    siteName: 'FocusFlow',
+    title: 'FocusFlow — 포모도로 집중 타이머',
+    description:
+      '포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "FocusFlow — 포모도로 집중 타이머",
-    description: "포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.",
+    card: 'summary_large_image',
+    title: 'FocusFlow — 포모도로 집중 타이머',
+    description:
+      '포모도로 기법으로 집중력을 높이세요. 타이머, 집중 통계, 앰비언트 사운드를 한곳에.',
   },
   icons: {
     icon: [
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [
-      { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
-    ],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
   },
   robots: {
     index: true,
@@ -68,17 +69,17 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-};
+}
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8f8fc" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e1e2e" },
+    { media: '(prefers-color-scheme: light)', color: '#f8f8fc' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e1e2e' },
   ],
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   minimumScale: 1,
-};
+}
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -88,7 +89,8 @@ const jsonLd = {
       '@id': `${BASE_URL}/#webapp`,
       name: 'FocusFlow',
       url: BASE_URL,
-      description: '포모도로 기법으로 집중력을 높이는 생산성 앱. 타이머, 통계, 앰비언트 사운드를 한곳에.',
+      description:
+        '포모도로 기법으로 집중력을 높이는 생산성 앱. 타이머, 통계, 앰비언트 사운드를 한곳에.',
       applicationCategory: 'ProductivityApplication',
       operatingSystem: 'Web, iOS, Android',
       offers: {
@@ -123,7 +125,7 @@ const jsonLd = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html
@@ -149,5 +151,5 @@ export default function RootLayout({
         <PWAInstallPrompt />
       </body>
     </html>
-  );
+  )
 }

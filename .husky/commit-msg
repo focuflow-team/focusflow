@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Conventional Commits 강제
+# 형식: <type>(<scope>)!: <subject>
+set -euo pipefail
+
+MSG_FILE="$1"
+# 첫 줄만 검사 (merge/revert/fixup 등 제외)
+FIRST_LINE="$(head -n 1 "$MSG_FILE")"
+
+# merge/revert/fixup/wip 자동 메시지는 통과
+case "$FIRST_LINE" in
+  "Merge "*|"Revert "*|"fixup!"*|"squash!"*|"WIP"*)
+    exit 0
+    ;;
+esac
+
+PATTERN='^(feat|fix|refactor|perf|docs|test|chore|style|build|ci)(\([a-z0-9/\-]+\))?!?: .{1,100}$'
+if ! printf '%s' "$FIRST_LINE" | grep -qE "$PATTERN"; then
+  echo "❌ Conventional Commits 형식 위반."
+  echo "   허용 형식: <type>(<scope>)!: <subject>"
+  echo "   type:  feat | fix | refactor | perf | docs | test | chore | style | build | ci"
+  echo "   예시:  feat(auth): add session refresh on 401"
+  echo "         fix(payment): handle missing webhook headers"
+  echo ""
+  echo "   받은 첫 줄: $FIRST_LINE"
+  exit 1
+fi

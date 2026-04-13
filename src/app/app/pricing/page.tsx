@@ -6,7 +6,9 @@ export const metadata: Metadata = { title: '플랜 선택' }
 
 export default async function PricingPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   let currentTier: 'free' | 'pro' | 'team' = 'free'
   if (user) {

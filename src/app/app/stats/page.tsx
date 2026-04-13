@@ -8,7 +8,9 @@ export const metadata: Metadata = {
 
 export default async function StatsPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   let subscriptionTier: 'free' | 'pro' | 'team' = 'free'
   if (user) {

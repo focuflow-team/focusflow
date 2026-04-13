@@ -1,83 +1,72 @@
-# CLAUDE.md
+---
+name: FocusFlow root context
+description: Root entrypoint — table of contents only. Scoped docs live under docs/ and nested CLAUDE.md files
+verification_status: verified
+last_verified: 2026-04-13
+owner: harness
+---
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# CLAUDE.md — FocusFlow
 
-@AGENTS.md
+이 파일은 **목차**입니다. 규칙 본문은 `docs/`에 있고, 도메인 규칙은 해당 디렉터리의 `CLAUDE.md`에 있습니다.
+에이전트는 **작업 도메인에 해당하는 파일만** 읽으세요.
+
+## 읽어야 할 순서
+
+1. `AGENTS.md` — Next.js 16은 훈련 데이터와 다릅니다. 코드 전에 먼저 읽으세요.
+2. `docs/core-beliefs.md` — 이 레포의 에이전트-우선 운영 원칙 (헌법).
+3. `docs/architecture.md` — 도메인·레이어링 지도.
+4. `docs/golden-principles.md` — "이건 하지 마세요" 누적 리스트.
+
+## 작업 유형별 진입점
+
+| 작업                  | 먼저 읽을 파일                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| 새 API route 추가     | `src/app/api/CLAUDE.md`, `docs/playbooks/add-api-route.md`                              |
+| Supabase 관련 코드    | `src/lib/supabase/CLAUDE.md`, `docs/design-docs/ADR-0001-supabase-client-boundaries.md` |
+| 결제 (PortOne/Stripe) | `docs/playbooks/payment-change.md`, `docs/escalation-policy.md`                         |
+| 웹훅 수정             | `docs/playbooks/webhook-signature-verification.md`                                      |
+| 인증/보호 라우트      | `docs/design-docs/ADR-0002-auth-boundary.md`                                            |
+| Next.js 16 API 확인   | `node_modules/next/dist/docs/` 또는 `docs/references/nextjs-16-llms.txt`                |
+| DB 스키마 이해        | `docs/generated/db-schema.md` (자동생성)                                                |
+| 구현 계획 수립        | `docs/exec-plans/active/` (신규 작업은 여기 파일 1개 생성)                              |
+
+## 에스컬레이션
+
+다음 변경은 반드시 휴먼에게 승인받으세요 — `docs/escalation-policy.md` 참고:
+
+- DB 마이그레이션, RLS 정책 변경
+- 결제 금액·플랜 매핑·웹훅 서명 검증
+- 인증 경계 (`middleware.ts`, `src/app/app/layout.tsx`)
+- `SUPABASE_SERVICE_ROLE_KEY` 사용 범위
+
+## 5-step loop (ADR-0005)
+
+모든 코드 작업은 이 순서:
+
+```bash
+bash scripts/start-task.sh <task-id>   # 1. worktree + exec-plan (코드 전에 플랜)
+#   구현은 .worktrees/<task-id> 안에서. 테스트 필수.
+bash scripts/verify-task.sh            # 4. 모든 체크 → logs/<task-id>/
+# Conventional Commits → 머지 →
+bash scripts/complete-task.sh <task-id>
+```
+
+Hook 강제: master 직접 커밋 차단, `src/` 변경 시 exec-plan 필수, commit-msg Conventional Commits. 세부: `docs/design-docs/ADR-0005-task-lifecycle.md`.
 
 ## 명령어
 
 ```bash
-npm run dev      # 개발 서버 (http://localhost:3000)
-npm run build    # 프로덕션 빌드
-npm run start    # 프로덕션 서버
+npm run dev          # 개발 서버
+npm run test         # Vitest
+npm run lint         # ESLint
+npm run depcruise    # 아키텍처 경계
+npm run verify-task  # 5-step loop Step 4
 ```
 
-lint, test 스크립트 및 테스트 프레임워크는 설정되어 있지 않음.
+실패 시 `logs/<task-id>/verify-report-*.txt` 확인 → 근본원인 수정 → 재시도.
 
-## 기술 스택
+## 금지
 
-- **Next.js 16** App Router, **React 19**, **TypeScript**
-- **Tailwind CSS v4** + `tw-animate-css`, UI 컴포넌트는 **shadcn/ui** (`src/components/ui/`)
-- **Supabase** — PostgreSQL DB 및 인증 (`@supabase/ssr`)
-- **Stripe** — 구독 결제 (Pro/Team 플랜)
-- **OpenAI API** — AI 집중 분석
-- **Google Calendar API** — 캘린더 연동
-- **MDX** — 블로그 콘텐츠 (`content/blog/`)
-- PWA 지원 (서비스 워커, 설치 프롬프트)
-
-## 아키텍처
-
-### 라우트 구조
-
-- `src/app/(dashboard)/` — 공개 랜딩 페이지 레이아웃
-- `src/app/(auth)/` — 로그인/회원가입 페이지
-- `src/app/app/` — 인증 필요 영역 (타이머, 통계, 설정, 결제, 리더보드). 미인증 시 `/login`으로 리다이렉트
-- `src/app/blog/` — `content/blog/`의 MDX 파일 기반 블로그
-- `src/app/u/` — 공개 사용자 프로필
-- `src/app/share/` — 세션 공유 페이지
-- `src/app/focus-test/` — 집중력 테스트
-
-### Supabase 클라이언트 패턴
-
-`src/lib/supabase/`에 3가지 클라이언트 팩토리:
-
-- `server.ts` → `createClient()` — Server Component 및 Route Handler용 (쿠키 기반)
-- `client.ts` → `createClient()` — Client Component용 (브라우저 클라이언트)
-- `service.ts` → `createServiceClient()` — `SUPABASE_SERVICE_ROLE_KEY`를 사용하는 관리자 작업용 (RLS 우회)
-
-모두 `src/types/database.ts`의 `Database` 타입으로 제네릭 지정. 타입 재생성: `supabase gen types typescript --linked`
-
-### 인증 흐름
-
-미들웨어(`middleware.ts`)가 모든 라우트에서 실행되어 Supabase 서버 클라이언트로 인증 상태 확인:
-- `/app/*` 라우트 — 미인증 사용자를 `/login`으로 리다이렉트
-- `/login`, `/signup` — 인증된 사용자를 `/app`으로 리다이렉트
-- `src/app/app/layout.tsx`에서도 서버 사이드 인증 체크 수행
-
-### API 라우트
-
-`src/app/api/` 하위:
-- `ai/` — OpenAI 기반 집중 분석
-- `calendar/` — Google Calendar OAuth 흐름 및 동기화
-- `stripe/` — 체크아웃 세션 및 웹훅 핸들러
-- `sessions/` — 집중 세션 CRUD
-- `share/` — 세션 공유
-- `cron/` — 스케줄 작업 (AI 인사이트, 매일 오전 9시, `vercel.json`에서 설정)
-- `rss/` — 블로그 RSS 피드
-
-### 데이터베이스
-
-SQL 마이그레이션 파일은 `supabase/migrations/`에 순서대로 실행:
-1. `001_initial_schema.sql` — profiles, focus_sessions, ai_insights
-2. `002_social_features.sql` — 소셜/공유 기능
-
-주요 테이블: `profiles` (사용자 데이터 + 구독 티어), `focus_sessions` (타이머 기록), `ai_insights` (AI 분석 결과)
-
-### 주요 컨벤션
-
-- 한국어 UI (`lang="ko"`) — 모든 사용자 대면 텍스트는 한국어
-- 경로 별칭 `@/`는 `src/`에 매핑
-- 컴포넌트는 기능 도메인별 구성 (`timer/`, `stats/`, `ai/`, `billing/`, `ambient/`, `pwa/`)
-- 커스텀 훅: `useTimer` (타이머 로직), `useAmbientSound` (앰비언트 사운드)
-- 외부 서비스 클라이언트: `src/lib/stripe.ts`, `src/lib/google-calendar.ts`, `src/lib/blog.ts`
-- `extension/` 디렉터리는 독립적인 Chrome 확장 프로그램 (Next.js 빌드에 포함되지 않음)
+- 이 파일에 규칙 본문을 추가하지 마세요. 100줄이 넘으면 목차가 아닙니다. 규칙은 `docs/`에 쓰고 여기선 링크만.
+- 기존 문서를 직접 덮어쓰기 전에 `verification_status`와 `last_verified` 프런트매터를 확인하세요.

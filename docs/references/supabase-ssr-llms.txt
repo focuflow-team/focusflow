@@ -1,0 +1,54 @@
+---
+name: Supabase SSR LLM Digest
+description: "@supabase/ssr 사용 패턴과 흔한 실수"
+verification_status: verified
+last_verified: 2026-04-13
+owner: harness
+---
+
+# @supabase/ssr — LLM Digest (FocusFlow)
+
+> 검증: 2026-04-13 · 패키지: `@supabase/ssr ^0.10`
+
+## 3개의 생성 함수
+
+| 함수 | 사용 위치 | 권한 |
+|---|---|---|
+| `createBrowserClient` | `'use client'` 파일 | 사용자 |
+| `createServerClient` | Server Component / Route Handler (middleware 포함) | 사용자 (cookies 기반) |
+| (`@supabase/supabase-js`) `createClient` + service role key | 서버 전용 관리자 작업 | **RLS 우회** |
+
+## 쿠키 어댑터
+
+- Server Component에서:
+  ```ts
+  const cookieStore = await cookies() // next/headers, async
+  createServerClient(URL, ANON_KEY, {
+    cookies: {
+      getAll() { return cookieStore.getAll() },
+      setAll(list) { try { list.forEach(({name, value, options}) => cookieStore.set(name, value, options)) } catch { /* RSC 한계 */ } }
+    }
+  })
+  ```
+- Middleware에서는 `request.cookies`/`response.cookies`로 동기화 (현재 `middleware.ts` 참고).
+
+## 인증 확인
+
+- `supabase.auth.getUser()` → 사용자 객체 또는 null. 서버 신뢰 가능.
+- `supabase.auth.getSession()` — **인가에 쓰지 말 것**. 쿠키에서 읽은 값이므로 변조 가능.
+
+## RLS
+
+- 사용자 권한으로 접근하려면 `createClient()`(server.ts/client.ts) 사용.
+- 관리자로 전체 테이블 조작이 필요하면 `createServiceClient()` + **반드시 직접 사용자 id 경계 확인**.
+
+## 타입
+
+- `createServerClient<Database>(...)`로 제네릭 지정.
+- `Database` 타입은 `src/types/database.ts` (자동생성).
+
+## 공통 실수
+
+- Server Component에서 `createBrowserClient` 사용 → 쿠키 누락.
+- Client Component에서 `createServiceClient` 사용 → 관리자 키 번들 유출 (금지, ADR-0001).
+- `cookies()`를 await 하지 않고 동기 사용 → 런타임 에러.

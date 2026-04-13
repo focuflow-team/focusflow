@@ -28,11 +28,6 @@ export const STRIPE_PLANS = {
     name: 'Team',
     price: '$12.99/월',
     priceId: process.env.STRIPE_TEAM_PRICE_ID!,
-    features: [
-      'Pro 모든 기능',
-      '팀 공유 통계',
-      '최대 5인 팀',
-      '팀 대시보드',
-    ],
+    features: ['Pro 모든 기능', '팀 공유 통계', '최대 5인 팀', '팀 대시보드'],
   },
 } as const

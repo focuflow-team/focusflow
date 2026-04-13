@@ -6,7 +6,10 @@ import { chargeWithBillingKey, getBillingKey, PORTONE_PLANS } from '@/lib/porton
 // 빌링키를 등록하고 첫 번째 결제를 수행합니다
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
