@@ -27,11 +27,12 @@ argument-hint: '[선택사항: 특정 verify 스킬 이름]'
 
 이 스킬이 순차 실행하는 검증 스킬 목록입니다. `/manage-skills`가 스킬을 생성/삭제할 때 이 목록을 자동 업데이트합니다.
 
-| #   | 스킬                     | 설명                                                                                           |
-| --- | ------------------------ | ---------------------------------------------------------------------------------------------- |
-| 1   | `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                        |
-| 2   | `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                      |
-| 3   | `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치) |
+| #   | 스킬                     | 설명                                                                                                |
+| --- | ------------------------ | --------------------------------------------------------------------------------------------------- |
+| 1   | `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                             |
+| 2   | `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                           |
+| 3   | `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치)      |
+| 4   | `verify-ai-insights`     | AI 인사이트 생성 규칙 검증 (모델명, rate limit, max_completion_tokens, 톤 마커, 인사이트 타입 순서) |
 
 ## 워크플로우
 

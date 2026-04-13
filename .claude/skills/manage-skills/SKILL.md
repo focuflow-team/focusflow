@@ -28,11 +28,12 @@ argument-hint: '[선택사항: 특정 스킬 이름 또는 집중할 영역]'
 
 현재 프로젝트에 등록된 검증 스킬 목록입니다. 새 스킬 생성/삭제 시 이 목록을 업데이트합니다.
 
-| 스킬                     | 설명                                                                                           | 커버 파일 패턴                                                                                    |
-| ------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                        | `src/components/billing/**`, `src/app/api/payment/**`, `src/lib/portone.ts`, `src/app/layout.tsx` |
-| `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                      | `src/app/(auth)/**/page.tsx`                                                                      |
-| `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치) | `src/hooks/useAmbientSound.ts`, `public/sounds/**`                                                |
+| 스킬                     | 설명                                                                                                | 커버 파일 패턴                                                                                              |
+| ------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                             | `src/components/billing/**`, `src/app/api/payment/**`, `src/lib/portone.ts`, `src/app/layout.tsx`           |
+| `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                           | `src/app/(auth)/**/page.tsx`                                                                                |
+| `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치)      | `src/hooks/useAmbientSound.ts`, `public/sounds/**`                                                          |
+| `verify-ai-insights`     | AI 인사이트 생성 규칙 검증 (모델명, rate limit, max_completion_tokens, 톤 마커, 인사이트 타입 순서) | `src/app/api/ai/insights/route.ts`, `scripts/test-insights-quality.ts`, `src/components/ai/AICoachCard.tsx` |
 
 ## 워크플로우
 
