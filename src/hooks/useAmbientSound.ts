@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export type SoundId = 'white' | 'pink' | 'rain' | 'forest' | 'cafe' | 'lofi'
+export type SoundId = 'white' | 'pink' | 'rain' | 'forest' | 'cafe' | 'fireplace'
 
 export interface SoundProfile {
   id: SoundId
@@ -10,6 +10,10 @@ export interface SoundProfile {
   emoji: string
   tier: 'free' | 'pro'
   description: string
+  /** URL or /public path to an audio file. If omitted, falls back to Web Audio synthesis. */
+  src?: string
+  /** Volume multiplier to normalize loudness across files (default: 1.0). */
+  gainMultiplier?: number
 }
 
 export const SOUND_PROFILES: SoundProfile[] = [
@@ -19,6 +23,7 @@ export const SOUND_PROFILES: SoundProfile[] = [
     emoji: '〰️',
     tier: 'free',
     description: '집중에 최적화된 균일한 노이즈',
+    // Synthesized — no file needed
   },
   {
     id: 'pink',
@@ -26,27 +31,47 @@ export const SOUND_PROFILES: SoundProfile[] = [
     emoji: '🌸',
     tier: 'free',
     description: '자연스럽고 부드러운 노이즈',
+    // Synthesized — no file needed
   },
-  { id: 'rain', label: '빗소리', emoji: '🌧️', tier: 'free', description: '차분한 빗소리 분위기' },
+  {
+    id: 'rain',
+    label: '빗소리',
+    emoji: '🌧️',
+    tier: 'free',
+    description: '차분한 빗소리 분위기',
+    src: '/sounds/rain.mp3',
+    gainMultiplier: 2.0,
+  },
   {
     id: 'forest',
     label: '숲속',
     emoji: '🌿',
     tier: 'pro',
     description: '새소리와 바람이 섞인 숲 분위기',
+    src: '/sounds/forest.mp3',
+    gainMultiplier: 2.0,
   },
-  { id: 'cafe', label: '카페', emoji: '☕', tier: 'pro', description: '카페에서 집중하는 느낌' },
   {
-    id: 'lofi',
-    label: 'Lo-Fi',
-    emoji: '🎵',
+    id: 'cafe',
+    label: '카페',
+    emoji: '☕',
     tier: 'pro',
-    description: '빈티지 감성의 로우파이 분위기',
+    description: '카페에서 집중하는 느낌',
+    src: '/sounds/cafe.mp3',
+  },
+  {
+    id: 'fireplace',
+    label: '벽난로',
+    emoji: '🔥',
+    tier: 'pro',
+    description: '아늑한 장작 타는 소리',
+    src: '/sounds/fireplace.mp3',
+    gainMultiplier: 2.0,
   },
 ]
 
 // ---------------------------------------------------------------------------
-// Noise buffer generators
+// Noise buffer generators (used as fallback when no src is provided)
 // ---------------------------------------------------------------------------
 
 function buildWhiteNoiseBuffer(ctx: AudioContext): AudioBuffer {
@@ -97,53 +122,57 @@ function buildBrownNoiseBuffer(ctx: AudioContext): AudioBuffer {
 }
 
 // ---------------------------------------------------------------------------
-// Sound graph builders per profile
+// Sound node types
 // ---------------------------------------------------------------------------
 
 interface SoundNodes {
-  source: AudioBufferSourceNode
+  /** Non-null when using Web Audio synthesis */
+  source: AudioBufferSourceNode | null
+  /** Non-null when using an HTML audio element (file/URL playback) */
+  audioEl: HTMLAudioElement | null
   gain: GainNode
   extras: AudioNode[]
 }
 
-function buildSoundGraph(ctx: AudioContext, id: SoundId, masterGain: GainNode): SoundNodes {
-  let buffer: AudioBuffer
+// ---------------------------------------------------------------------------
+// Graph builders
+// ---------------------------------------------------------------------------
+
+function buildSynthGraph(ctx: AudioContext, id: SoundId, masterGain: GainNode): SoundNodes {
   const extras: AudioNode[] = []
-  let chainEnd: AudioNode = masterGain
 
   switch (id) {
     case 'white': {
-      buffer = buildWhiteNoiseBuffer(ctx)
+      const buf = buildWhiteNoiseBuffer(ctx)
       const src = ctx.createBufferSource()
-      src.buffer = buffer
+      src.buffer = buf
       src.loop = true
       const gain = ctx.createGain()
       gain.gain.value = 0.15
       src.connect(gain)
       gain.connect(masterGain)
       extras.push(gain)
-      return { source: src, gain, extras }
+      return { source: src, audioEl: null, gain, extras }
     }
 
     case 'pink': {
-      buffer = buildPinkNoiseBuffer(ctx)
+      const buf = buildPinkNoiseBuffer(ctx)
       const src = ctx.createBufferSource()
-      src.buffer = buffer
+      src.buffer = buf
       src.loop = true
       const gain = ctx.createGain()
       gain.gain.value = 0.3
       src.connect(gain)
       gain.connect(masterGain)
       extras.push(gain)
-      return { source: src, gain, extras }
+      return { source: src, audioEl: null, gain, extras }
     }
 
     case 'rain': {
-      buffer = buildBrownNoiseBuffer(ctx)
+      const buf = buildBrownNoiseBuffer(ctx)
       const src = ctx.createBufferSource()
-      src.buffer = buffer
+      src.buffer = buf
       src.loop = true
-      // Low-pass filter to make it sound like rain
       const lpf = ctx.createBiquadFilter()
       lpf.type = 'lowpass'
       lpf.frequency.value = 600
@@ -154,92 +183,30 @@ function buildSoundGraph(ctx: AudioContext, id: SoundId, masterGain: GainNode): 
       lpf.connect(gain)
       gain.connect(masterGain)
       extras.push(lpf, gain)
-      return { source: src, gain, extras }
-    }
-
-    case 'forest': {
-      buffer = buildPinkNoiseBuffer(ctx)
-      const src = ctx.createBufferSource()
-      src.buffer = buffer
-      src.loop = true
-      // Bandpass to emphasize mid frequencies (birds, leaves)
-      const bpf = ctx.createBiquadFilter()
-      bpf.type = 'bandpass'
-      bpf.frequency.value = 1200
-      bpf.Q.value = 0.3
-      // LFO for wind sway effect
-      const lfo = ctx.createOscillator()
-      lfo.type = 'sine'
-      lfo.frequency.value = 0.15
-      const lfoGain = ctx.createGain()
-      lfoGain.gain.value = 0.05
-      lfo.connect(lfoGain)
-      lfoGain.connect(bpf.frequency)
-      lfo.start()
-      const gain = ctx.createGain()
-      gain.gain.value = 0.5
-      src.connect(bpf)
-      bpf.connect(gain)
-      gain.connect(masterGain)
-      extras.push(bpf, lfo, lfoGain, gain)
-      return { source: src, gain, extras }
-    }
-
-    case 'cafe': {
-      buffer = buildPinkNoiseBuffer(ctx)
-      const src = ctx.createBufferSource()
-      src.buffer = buffer
-      src.loop = true
-      // Multiple bandpass filters for cafe chatter texture
-      const bpf1 = ctx.createBiquadFilter()
-      bpf1.type = 'bandpass'
-      bpf1.frequency.value = 800
-      bpf1.Q.value = 0.5
-      const bpf2 = ctx.createBiquadFilter()
-      bpf2.type = 'bandpass'
-      bpf2.frequency.value = 2500
-      bpf2.Q.value = 0.8
-      const merge = ctx.createGain()
-      merge.gain.value = 0.5
-      src.connect(bpf1)
-      src.connect(bpf2)
-      bpf1.connect(merge)
-      bpf2.connect(merge)
-      const gain = ctx.createGain()
-      gain.gain.value = 0.4
-      merge.connect(gain)
-      gain.connect(masterGain)
-      extras.push(bpf1, bpf2, merge, gain)
-      return { source: src, gain, extras }
-    }
-
-    case 'lofi': {
-      buffer = buildBrownNoiseBuffer(ctx)
-      const src = ctx.createBufferSource()
-      src.buffer = buffer
-      src.loop = true
-      // Very low-pass for that muffled vinyl feel
-      const lpf = ctx.createBiquadFilter()
-      lpf.type = 'lowpass'
-      lpf.frequency.value = 250
-      // High-shelf cut for warmth
-      const shelf = ctx.createBiquadFilter()
-      shelf.type = 'highshelf'
-      shelf.frequency.value = 3000
-      shelf.gain.value = -12
-      const gain = ctx.createGain()
-      gain.gain.value = 0.6
-      src.connect(lpf)
-      lpf.connect(shelf)
-      shelf.connect(gain)
-      gain.connect(masterGain)
-      extras.push(lpf, shelf, gain)
-      return { source: src, gain, extras }
+      return { source: src, audioEl: null, gain, extras }
     }
 
     default:
-      throw new Error(`Unknown sound id: ${id}`)
+      throw new Error(`No synth fallback for sound: ${id}`)
   }
+}
+
+function buildUrlSoundNodes(
+  ctx: AudioContext,
+  src: string,
+  masterGain: GainNode,
+  gainMultiplier = 1.0,
+): SoundNodes {
+  const audioEl = new Audio()
+  audioEl.src = src
+  audioEl.loop = true
+  audioEl.crossOrigin = 'anonymous'
+  const mediaSource = ctx.createMediaElementSource(audioEl)
+  const gain = ctx.createGain()
+  gain.gain.value = gainMultiplier
+  mediaSource.connect(gain)
+  gain.connect(masterGain)
+  return { source: null, audioEl, gain, extras: [mediaSource] }
 }
 
 // ---------------------------------------------------------------------------
@@ -268,7 +235,9 @@ export function useAmbientSound(): UseAmbientSoundReturn {
   const masterRef = useRef<GainNode | null>(null)
   const nodesRef = useRef<SoundNodes | null>(null)
   const volumeRef = useRef(volume)
-  volumeRef.current = volume
+  useEffect(() => {
+    volumeRef.current = volume
+  })
 
   function getCtx(): AudioContext {
     if (!ctxRef.current) {
@@ -284,9 +253,16 @@ export function useAmbientSound(): UseAmbientSoundReturn {
   const stopCurrent = useCallback(() => {
     if (nodesRef.current) {
       try {
-        nodesRef.current.source.stop()
-        nodesRef.current.source.disconnect()
-        for (const node of nodesRef.current.extras) {
+        const { source, audioEl, extras } = nodesRef.current
+        if (audioEl) {
+          audioEl.pause()
+          audioEl.src = ''
+        }
+        if (source) {
+          source.stop()
+          source.disconnect()
+        }
+        for (const node of extras) {
           if (node instanceof OscillatorNode) {
             try {
               node.stop()
@@ -308,12 +284,38 @@ export function useAmbientSound(): UseAmbientSoundReturn {
       stopCurrent()
       const ctx = getCtx()
       if (ctx.state === 'suspended') ctx.resume()
-      const nodes = buildSoundGraph(ctx, id, masterRef.current!)
-      nodes.source.start()
-      nodesRef.current = nodes
-      setActiveSound(id)
-      setPlaying(true)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+
+      const profile = SOUND_PROFILES.find((p) => p.id === id)!
+
+      if (profile.src) {
+        const nodes = buildUrlSoundNodes(
+          ctx,
+          profile.src,
+          masterRef.current!,
+          profile.gainMultiplier,
+        )
+        nodesRef.current = nodes
+        setActiveSound(id)
+        setPlaying(true)
+        nodes.audioEl!.play().catch(() => {
+          // File not found — fall back to synthesis if possible
+          stopCurrent()
+          try {
+            const fallback = buildSynthGraph(ctx, id, masterRef.current!)
+            fallback.source!.start()
+            nodesRef.current = fallback
+          } catch {
+            setPlaying(false)
+            setActiveSound(null)
+          }
+        })
+      } else {
+        const nodes = buildSynthGraph(ctx, id, masterRef.current!)
+        nodes.source!.start()
+        nodesRef.current = nodes
+        setActiveSound(id)
+        setPlaying(true)
+      }
     },
     [stopCurrent],
   )
@@ -339,7 +341,6 @@ export function useAmbientSound(): UseAmbientSoundReturn {
     (status: 'running' | 'paused' | 'stopped') => {
       if (!autoPlay) return
       if (status === 'running' && !playing) {
-        // Auto-start with first free sound
         play('pink')
       } else if ((status === 'paused' || status === 'stopped') && playing) {
         stop()

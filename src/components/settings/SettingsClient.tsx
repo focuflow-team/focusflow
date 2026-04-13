@@ -134,10 +134,18 @@ export function SettingsClient({
         <h2 className="font-medium">계정</h2>
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">구독 플랜</span>
-          <Link href="/app/billing" className="text-sm font-medium hover:underline">
+          <Link href="/app/pricing" className="text-sm font-medium hover:underline">
             {subscriptionTier === 'free' ? 'Free' : subscriptionTier === 'pro' ? 'Pro' : 'Team'} →
           </Link>
         </div>
+        {subscriptionTier !== 'free' && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">결제 관리</span>
+            <Link href="/app/billing" className="text-sm font-medium hover:underline">
+              카드 · 해지 →
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )

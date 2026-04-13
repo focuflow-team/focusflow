@@ -29,7 +29,7 @@ describe('AmbientPlayer', () => {
     render(<AmbientPlayer sound={makeSoundStub()} userTier="team" />)
 
     expect(screen.getByRole('button', { name: /카페/ })).not.toBeDisabled()
-    expect(screen.getByRole('button', { name: /Lo-Fi/ })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /벽난로/ })).not.toBeDisabled()
   })
 
   it('Free tier에서는 Pro 사운드가 비활성화된다 (회귀 방지)', () => {

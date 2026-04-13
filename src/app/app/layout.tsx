@@ -48,12 +48,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
               리더보드
             </Link>
             <Link
-              href="/app/pricing"
-              className="rounded-md px-1.5 sm:px-2 py-1.5 text-xs sm:text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              플랜
-            </Link>
-            <Link
               href="/app/settings"
               className="rounded-md px-1.5 sm:px-2 py-1.5 text-xs sm:text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >

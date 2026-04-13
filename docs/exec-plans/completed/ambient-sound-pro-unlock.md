@@ -1,8 +1,8 @@
 ---
 name: ambient-sound-pro-unlock
 description: Pro 사용자인데도 AmbientPlayer가 잠금 상태로 표시되는 버그 수정
-verification_status: draft
-last_verified: 2026-04-14
+verification_status: verified
+last_verified: 2026-04-13
 owner: jaehyun
 branch: fix/ambient-sound-pro-unlock
 ---

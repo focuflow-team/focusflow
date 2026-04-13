@@ -32,6 +32,7 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [rateLimitMsg, setRateLimitMsg] = useState<string | null>(null)
 
   const isPro = subscriptionTier === 'pro' || subscriptionTier === 'team'
 
@@ -59,11 +60,14 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
   const generateInsights = async () => {
     setGenerating(true)
     setError(null)
+    setRateLimitMsg(null)
     try {
       const res = await fetch('/api/ai/insights', { method: 'POST' })
       const data = await res.json()
       if (res.ok) {
         setInsights(data.insights ?? [])
+      } else if (res.status === 429) {
+        setRateLimitMsg(data.message)
       } else if (data.code === 'PRO_REQUIRED') {
         setError('Pro 플랜이 필요합니다.')
       } else {
@@ -101,6 +105,10 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
         )}
       </div>
 
+      {rateLimitMsg && (
+        <p className="text-xs text-muted-foreground text-right -mt-2">{rateLimitMsg}</p>
+      )}
+
       {!isPro ? (
         <div className="rounded-lg border border-dashed border-border p-6 text-center space-y-2">
           <Sparkles className="mx-auto h-8 w-8 text-purple-400 opacity-60" />
@@ -128,23 +136,21 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {insights.map((insight) => (
             <li
               key={insight.id}
-              className="rounded-lg border border-border bg-background p-3 space-y-1"
+              className="rounded-lg border border-border bg-background p-4 space-y-2"
             >
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 {INSIGHT_ICONS[insight.insight_type]}
-                <span className="text-[10px] text-muted-foreground font-medium">
+                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {INSIGHT_LABELS[insight.insight_type]}
                 </span>
-                {insight.metadata?.title && (
-                  <span className="ml-auto text-xs font-medium truncate max-w-[160px]">
-                    {insight.metadata.title}
-                  </span>
-                )}
               </div>
+              {insight.metadata?.title && (
+                <p className="text-sm font-semibold leading-snug">{insight.metadata.title}</p>
+              )}
               <p className="text-xs text-muted-foreground leading-relaxed">{insight.content}</p>
             </li>
           ))}

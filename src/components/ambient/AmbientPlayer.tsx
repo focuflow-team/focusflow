@@ -27,7 +27,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
     tier === 'free' || userTier === 'pro' || userTier === 'team'
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-4 w-full max-w-sm">
+    <div className="rounded-xl border border-border bg-card p-4 space-y-4 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold">앰비언트 사운드</h2>
         <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">

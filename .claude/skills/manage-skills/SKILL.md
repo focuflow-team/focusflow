@@ -2,7 +2,7 @@
 name: manage-skills
 description: 세션 변경사항을 분석하여 검증 스킬 누락을 탐지합니다. 기존 스킬을 동적으로 탐색하고, 새 스킬을 생성하거나 기존 스킬을 업데이트한 뒤 CLAUDE.md를 관리합니다.
 disable-model-invocation: true
-argument-hint: "[선택사항: 특정 스킬 이름 또는 집중할 영역]"
+argument-hint: '[선택사항: 특정 스킬 이름 또는 집중할 영역]'
 ---
 
 # 세션 기반 스킬 유지보수
@@ -28,10 +28,11 @@ argument-hint: "[선택사항: 특정 스킬 이름 또는 집중할 영역]"
 
 현재 프로젝트에 등록된 검증 스킬 목록입니다. 새 스킬 생성/삭제 시 이 목록을 업데이트합니다.
 
-| 스킬 | 설명 | 커버 파일 패턴 |
-|------|------|---------------|
-| `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN) | `src/components/billing/**`, `src/app/api/payment/**`, `src/lib/portone.ts`, `src/app/layout.tsx` |
-| `verify-auth-pages` | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수) | `src/app/(auth)/**/page.tsx` |
+| 스킬                     | 설명                                                                                           | 커버 파일 패턴                                                                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                        | `src/components/billing/**`, `src/app/api/payment/**`, `src/lib/portone.ts`, `src/app/layout.tsx` |
+| `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                      | `src/app/(auth)/**/page.tsx`                                                                      |
+| `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치) | `src/hooks/useAmbientSound.ts`, `public/sounds/**`                                                |
 
 ## 워크플로우
 
@@ -59,12 +60,12 @@ git diff main...HEAD --name-only 2>/dev/null
 
 **이 세션에서 N개 파일 변경됨:**
 
-| 디렉토리 | 파일 |
-|----------|------|
-| src/components | `Button.tsx`, `Modal.tsx` |
-| src/server | `router.ts`, `handler.ts` |
-| tests | `api.test.ts` |
-| (루트) | `package.json`, `.eslintrc.js` |
+| 디렉토리       | 파일                           |
+| -------------- | ------------------------------ |
+| src/components | `Button.tsx`, `Modal.tsx`      |
+| src/server     | `router.ts`, `handler.ts`      |
+| tests          | `api.test.ts`                  |
+| (루트)         | `package.json`, `.eslintrc.js` |
 ```
 
 ### Step 2: 등록된 스킬과 변경 파일 매핑
@@ -95,10 +96,10 @@ Step 1에서 수집한 각 변경 파일에 대해, 등록된 스킬의 패턴�
 ```markdown
 ### 파일 → 스킬 매핑
 
-| 스킬 | 트리거 파일 (변경된 파일) | 액션 |
-|------|--------------------------|------|
-| verify-api | `router.ts`, `handler.ts` | CHECK |
-| verify-ui | `Button.tsx` | CHECK |
+| 스킬        | 트리거 파일 (변경된 파일)      | 액션      |
+| ----------- | ------------------------------ | --------- |
+| verify-api  | `router.ts`, `handler.ts`      | CHECK     |
+| verify-ui   | `Button.tsx`                   | CHECK     |
 | (스킬 없음) | `package.json`, `.eslintrc.js` | UNCOVERED |
 ```
 
@@ -118,11 +119,11 @@ Step 1에서 수집한 각 변경 파일에 대해, 등록된 스킬의 패턴�
 발견된 각 갭을 기록합니다:
 
 ```markdown
-| 스킬 | 갭 유형 | 상세 |
-|------|---------|------|
-| verify-api | 파일 누락 | `src/server/newHandler.ts`가 Related Files에 없음 |
-| verify-ui | 새 패턴 | 새 컴포넌트가 검사되지 않는 규칙을 사용 |
-| verify-test | 오래된 값 | 설정 파일의 테스트 러너 패턴이 변경됨 |
+| 스킬        | 갭 유형   | 상세                                              |
+| ----------- | --------- | ------------------------------------------------- |
+| verify-api  | 파일 누락 | `src/server/newHandler.ts`가 Related Files에 없음 |
+| verify-ui   | 새 패턴   | 새 컴포넌트가 검사되지 않는 규칙을 사용           |
+| verify-test | 오래된 값 | 설정 파일의 테스트 러너 패턴이 변경됨             |
 ```
 
 ### Step 4: CREATE vs UPDATE 결정
@@ -145,18 +146,22 @@ Step 1에서 수집한 각 변경 파일에 대해, 등록된 스킬의 패턴�
 ### 제안 액션
 
 **결정: 기존 스킬 UPDATE** (N개)
+
 - `verify-api` — 누락된 파일 참조 2개 추가, 탐지 패턴 업데이트
 - `verify-test` — 새 설정 패턴에 대한 탐지 명령어 업데이트
 
 **결정: 새 스킬 CREATE** (M개)
+
 - 새 스킬 필요 — <패턴 설명> 커버 (X개 미커버 파일)
 
 **액션 불필요:**
+
 - `package.json` — 설정 파일, 면제
 - `README.md` — 문서, 면제
 ```
 
 `AskUserQuestion`을 사용하여 확인합니다:
+
 - 어떤 기존 스킬을 업데이트할지
 - 제안된 새 스킬을 생성할지
 - 전체 건너뛰기 옵션
@@ -166,6 +171,7 @@ Step 1에서 수집한 각 변경 파일에 대해, 등록된 스킬의 패턴�
 사용자가 업데이트를 승인한 각 스킬에 대해, 현재 SKILL.md를 읽고 대상 편집을 적용합니다:
 
 **규칙:**
+
 - **추가/수정만** — 아직 작동하는 기존 검사는 절대 제거하지 않음
 - **Related Files** 테이블에 새 파일 경로 추가
 - 변경된 파일에서 발견된 패턴에 대한 새 탐지 명령어 추가
@@ -178,9 +184,9 @@ Step 1에서 수집한 각 변경 파일에 대해, 등록된 스킬의 패턴�
 ```markdown
 ## Related Files
 
-| File | Purpose |
-|------|---------|
-| ... 기존 항목 ... |
+| File                       | Purpose                             |
+| -------------------------- | ----------------------------------- |
+| ... 기존 항목 ...          |
 | `src/server/newHandler.ts` | 유효성 검사가 포함된 새 요청 핸들러 |
 ```
 
@@ -227,6 +233,7 @@ description: <한 줄 설명>. <트리거 조건> 후 사용.
 ```
 
 필수 섹션:
+
 - **Purpose** — 2-5개의 번호가 매겨진 검증 카테고리
 - **When to Run** — 3-5개의 트리거 조건
 - **Related Files** — 코드베이스의 실제 파일 경로 테이블 (`ls`로 검증, 플레이스홀더 불가)
@@ -279,21 +286,26 @@ ls <file-path> 2>/dev/null || echo "MISSING: <file-path>"
 ### 분석된 변경 파일: N개
 
 ### 업데이트된 스킬: X개
+
 - `verify-<name>`: N개의 새 검사 추가, Related Files 업데이트
 - `verify-<name>`: 새 패턴에 대한 탐지 명령어 업데이트
 
 ### 생성된 스킬: Y개
+
 - `verify-<name>`: <패턴> 커버
 
 ### 업데이트된 연관 파일:
+
 - `manage-skills/SKILL.md`: 등록된 검증 스킬 테이블 업데이트
 - `verify-implementation/SKILL.md`: 실행 대상 스킬 테이블 업데이트
 - `CLAUDE.md`: Skills 테이블 업데이트
 
 ### 영향없는 스킬: Z개
+
 - (관련 변경사항 없음)
 
 ### 미커버 변경사항 (적용 스킬 없음):
+
 - `path/to/file` — 면제 (사유)
 ```
 
@@ -313,11 +325,11 @@ ls <file-path> 2>/dev/null || echo "MISSING: <file-path>"
 
 ## Related Files
 
-| File | Purpose |
-|------|---------|
+| File                                            | Purpose                                          |
+| ----------------------------------------------- | ------------------------------------------------ |
 | `.claude/skills/verify-implementation/SKILL.md` | 통합 검증 스킬 (이 스킬이 실행 대상 목록을 관리) |
-| `.claude/skills/manage-skills/SKILL.md` | 이 파일 자체 (등록된 검증 스킬 목록을 관리) |
-| `CLAUDE.md` | 프로젝트 지침 (이 스킬이 Skills 섹션을 관리) |
+| `.claude/skills/manage-skills/SKILL.md`         | 이 파일 자체 (등록된 검증 스킬 목록을 관리)      |
+| `CLAUDE.md`                                     | 프로젝트 지침 (이 스킬이 Skills 섹션을 관리)     |
 
 ## 예외사항
 

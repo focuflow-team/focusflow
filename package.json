@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "drift": "tsx scripts/drift-detector.ts",
+    "test:insights": "tsx scripts/test-insights-quality.ts",
     "verify": "bash scripts/self-review.sh",
     "db:docs": "bash scripts/generate-db-docs.sh",
     "start-task": "bash scripts/start-task.sh",
