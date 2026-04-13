@@ -8,7 +8,11 @@ import { TimerDisplay } from './TimerDisplay'
 import { TimerControls } from './TimerControls'
 import { AmbientPlayer } from '@/components/ambient/AmbientPlayer'
 
-export function TimerPage() {
+interface TimerPageProps {
+  subscriptionTier?: 'free' | 'pro' | 'team'
+}
+
+export function TimerPage({ subscriptionTier = 'free' }: TimerPageProps = {}) {
   const [taskName, setTaskName] = useState('')
   const [savingSession, setSavingSession] = useState(false)
   const [lastMessage, setLastMessage] = useState<string | null>(null)
@@ -131,7 +135,7 @@ export function TimerPage() {
             transition={{ duration: 0.2 }}
             className="w-full"
           >
-            <AmbientPlayer sound={ambientSound} />
+            <AmbientPlayer sound={ambientSound} userTier={subscriptionTier} />
           </motion.div>
         )}
       </AnimatePresence>
