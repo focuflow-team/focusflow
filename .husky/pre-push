@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# 결제·인증 도메인 변경 시 self-review 전체 실행.
+# 아니면 빠른 타입체크만.
+changed=$(git diff --name-only origin/HEAD...HEAD 2>/dev/null || git diff --name-only HEAD)
+if echo "$changed" | grep -qE '^(src/app/api/payment/|src/app/api/stripe/|src/components/billing/|src/lib/(portone|stripe)\.ts|src/lib/supabase/|middleware\.ts)'; then
+  echo "🔒 결제/인증/Supabase 경계 변경 감지 → 전체 self-review 실행"
+  bash scripts/self-review.sh || exit 1
+else
+  npm run typecheck || exit 1
+fi

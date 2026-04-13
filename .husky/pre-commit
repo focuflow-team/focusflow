@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# FocusFlow pre-commit (5-step loop 강제)
+#  1) main/master 브랜치 커밋 금지
+#  2) src/ 파일 스테이지 시 해당 task의 exec-plan 존재 강제
+#  3) lint-staged (eslint --fix + prettier)
+#  4) src/ 스테이지 시 vitest 실행
+set -euo pipefail
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+
+# (1) 기본 브랜치 직접 커밋 차단
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo "❌ cannot commit to $BRANCH directly."
+  echo "   scripts/start-task.sh <task-id> 로 worktree + feature branch를 먼저 만드세요."
+  exit 1
+fi
+
+STAGED_SRC="$(git diff --cached --name-only --diff-filter=ACM | grep -E '^src/' || true)"
+
+# (2) src 변경 시 exec-plan 필수
+if [ -n "$STAGED_SRC" ]; then
+  TASK_ID="${BRANCH#*/}"
+  PLAN_ACTIVE="docs/exec-plans/active/${TASK_ID}.md"
+  PLAN_DONE="docs/exec-plans/completed/${TASK_ID}.md"
+  if [ ! -f "$PLAN_ACTIVE" ] && [ ! -f "$PLAN_DONE" ]; then
+    echo "❌ EXEC_PLAN not found: $PLAN_ACTIVE"
+    echo "   Step 1을 건너뛰었습니다. 다음 중 하나를 실행하세요:"
+    echo "     bash scripts/start-task.sh ${TASK_ID}"
+    echo "   또는 브랜치 이름을 exec-plan 파일 이름에 맞추세요."
+    exit 1
+  fi
+fi
+
+# (3) lint-staged
+npx lint-staged
+
+# (4) src 변경 시 unit tests
+if [ -n "$STAGED_SRC" ]; then
+  echo "▶ vitest (src/ 변경 감지)"
+  npx vitest run --reporter=default --passWithNoTests
+fi

@@ -46,7 +46,7 @@ export default function SignupPage() {
               type="email"
               placeholder="이메일"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full rounded-md border px-3 py-2 text-sm"
             />
@@ -54,7 +54,7 @@ export default function SignupPage() {
               type="password"
               placeholder="비밀번호 (최소 6자)"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
               className="w-full rounded-md border px-3 py-2 text-sm"

@@ -8,13 +8,13 @@ export type TimerStatus = 'stopped' | 'running' | 'paused'
 export interface TimerState {
   phase: TimerPhase
   status: TimerStatus
-  elapsed: number        // seconds elapsed in current phase
-  totalDuration: number  // seconds for current phase
-  pomodoroCount: number  // completed work sessions
+  elapsed: number // seconds elapsed in current phase
+  totalDuration: number // seconds for current phase
+  pomodoroCount: number // completed work sessions
 }
 
-const WORK_DURATION = 25 * 60       // 25 minutes
-const BREAK_DURATION = 5 * 60       // 5 minutes
+const WORK_DURATION = 25 * 60 // 25 minutes
+const BREAK_DURATION = 5 * 60 // 5 minutes
 const LONG_BREAK_DURATION = 25 * 60 // 25 minutes (after 4 pomodoros)
 const LONG_BREAK_INTERVAL = 4
 
@@ -25,10 +25,14 @@ function phaseForCount(count: number): TimerPhase {
 
 function durationForPhase(phase: TimerPhase): number {
   switch (phase) {
-    case 'work':       return WORK_DURATION
-    case 'break':      return BREAK_DURATION
-    case 'long_break': return LONG_BREAK_DURATION
-    default:           return WORK_DURATION
+    case 'work':
+      return WORK_DURATION
+    case 'break':
+      return BREAK_DURATION
+    case 'long_break':
+      return LONG_BREAK_DURATION
+    default:
+      return WORK_DURATION
   }
 }
 
@@ -66,7 +70,7 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
     const now = Date.now()
     const elapsed = baseElapsedRef.current + Math.floor((now - startedAtRef.current) / 1000)
 
-    setState(prev => {
+    setState((prev) => {
       if (elapsed >= prev.totalDuration) {
         // Phase complete
         if (prev.phase === 'work') {
@@ -100,7 +104,7 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
 
   // Start / resume
   const start = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       const phase = prev.phase === 'idle' ? 'work' : prev.phase
       const totalDuration = prev.phase === 'idle' ? WORK_DURATION : prev.totalDuration
       startedAtRef.current = Date.now()
@@ -120,7 +124,7 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
       baseElapsedRef.current += Math.floor((Date.now() - startedAtRef.current) / 1000)
       startedAtRef.current = null
     }
-    setState(prev => ({ ...prev, status: 'paused' }))
+    setState((prev) => ({ ...prev, status: 'paused' }))
   }, [])
 
   // Reset
@@ -131,7 +135,7 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
     }
     startedAtRef.current = null
     baseElapsedRef.current = 0
-    setState(prev => ({
+    setState((prev) => ({
       phase: 'idle',
       status: 'stopped',
       elapsed: 0,

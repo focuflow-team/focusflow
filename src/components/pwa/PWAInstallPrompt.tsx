@@ -29,7 +29,9 @@ export function PWAInstallPrompt() {
     setIsStandalone(standalone)
     if (standalone) return
 
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as Window & { MSStream?: unknown }).MSStream
+    const ios =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as Window & { MSStream?: unknown }).MSStream
     setIsIOS(ios)
 
     const handler = (e: Event) => {
@@ -79,7 +81,10 @@ export function PWAInstallPrompt() {
                   홈 화면에 추가하면 오프라인에서도 타이머를 사용할 수 있어요
                 </p>
               </div>
-              <button onClick={dismiss} className="shrink-0 text-muted-foreground hover:text-foreground">
+              <button
+                onClick={dismiss}
+                className="shrink-0 text-muted-foreground hover:text-foreground"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>

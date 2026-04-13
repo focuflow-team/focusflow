@@ -6,7 +6,9 @@ export const metadata: Metadata = { title: '구독 관리' }
 
 export default async function BillingPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   let subscriptionTier: 'free' | 'pro' | 'team' = 'free'
   let nextBillingAt: string | null = null

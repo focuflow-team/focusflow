@@ -1,14 +1,28 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  Timer, BarChart2, Waves, Smartphone, Brain, Calendar,
-  Check, ChevronDown, Star, Zap, Sparkles, Users, ArrowRight,
-  Target, TrendingUp, Clock
+  Timer,
+  BarChart2,
+  Waves,
+  Smartphone,
+  Brain,
+  Calendar,
+  Check,
+  ChevronDown,
+  Star,
+  Zap,
+  Sparkles,
+  Users,
+  ArrowRight,
+  Target,
+  TrendingUp,
+  Clock,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'FocusFlow — AI 집중력 관리 앱 | 포모도로 타이머',
-  description: 'AI가 당신의 집중 패턴을 분석하고 최적의 업무 사이클을 제안합니다. 포모도로 타이머, AI 코치, 앰비언트 사운드로 생산성을 극대화하세요.',
+  description:
+    'AI가 당신의 집중 패턴을 분석하고 최적의 업무 사이클을 제안합니다. 포모도로 타이머, AI 코치, 앰비언트 사운드로 생산성을 극대화하세요.',
   openGraph: {
     title: 'FocusFlow — AI 집중력 관리 앱',
     description: 'AI가 당신의 집중 패턴을 분석하고 최적의 업무 사이클을 제안합니다.',
@@ -114,12 +128,7 @@ const plans = [
     description: '팀 생산성 관리',
     icon: Users,
     iconColor: 'text-blue-500',
-    features: [
-      'Pro 모든 기능',
-      '팀 공유 통계',
-      '최대 5인 팀',
-      '팀 대시보드',
-    ],
+    features: ['Pro 모든 기능', '팀 공유 통계', '최대 5인 팀', '팀 대시보드'],
     cta: 'Team 시작하기',
     ctaHref: '/signup?plan=team',
     ctaClass: 'bg-primary hover:bg-primary/90 text-primary-foreground',
@@ -180,12 +189,22 @@ export default function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="font-bold tracking-tight">FocusFlow</Link>
+          <Link href="/" className="font-bold tracking-tight">
+            FocusFlow
+          </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link href="#features" className="hover:text-foreground transition-colors">기능</Link>
-            <Link href="#pricing" className="hover:text-foreground transition-colors">가격</Link>
-            <Link href="/blog" className="hover:text-foreground transition-colors">블로그</Link>
-            <Link href="/focus-test" className="hover:text-foreground transition-colors">집중력 테스트</Link>
+            <Link href="#features" className="hover:text-foreground transition-colors">
+              기능
+            </Link>
+            <Link href="#pricing" className="hover:text-foreground transition-colors">
+              가격
+            </Link>
+            <Link href="/blog" className="hover:text-foreground transition-colors">
+              블로그
+            </Link>
+            <Link href="/focus-test" className="hover:text-foreground transition-colors">
+              집중력 테스트
+            </Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
@@ -234,8 +253,8 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="mx-auto max-w-xl text-base text-muted-foreground sm:text-lg">
-                FocusFlow는 포모도로 타이머를 넘어 AI 코치가 당신만의 집중 패턴을 파악하고
-                최적의 업무 시간을 제안하는 생산성 앱입니다.
+                FocusFlow는 포모도로 타이머를 넘어 AI 코치가 당신만의 집중 패턴을 파악하고 최적의
+                업무 시간을 제안하는 생산성 앱입니다.
               </p>
             </div>
 
@@ -258,27 +277,34 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Target className="h-4 w-4 text-primary" />
-                <span><strong className="text-foreground">1,200+</strong> 집중 세션/일</span>
+                <span>
+                  <strong className="text-foreground">1,200+</strong> 집중 세션/일
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <TrendingUp className="h-4 w-4 text-green-500" />
-                <span><strong className="text-foreground">23%</strong> 평균 생산성 향상</span>
+                <span>
+                  <strong className="text-foreground">23%</strong> 평균 생산성 향상
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4 text-blue-500" />
-                <span><strong className="text-foreground">4.8★</strong> 사용자 평점</span>
+                <span>
+                  <strong className="text-foreground">4.8★</strong> 사용자 평점
+                </span>
               </div>
             </div>
           </div>
         </section>
 
         {/* Features */}
-        <section id="features" className="border-t border-border/50 px-4 py-16 sm:py-24 scroll-mt-14">
+        <section
+          id="features"
+          className="border-t border-border/50 px-4 py-16 sm:py-24 scroll-mt-14"
+        >
           <div className="mx-auto max-w-5xl">
             <div className="mb-12 text-center space-y-3">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                집중을 위한 모든 것
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">집중을 위한 모든 것</h2>
               <p className="text-sm text-muted-foreground">
                 타이머부터 AI 코치, 방해 요소 차단까지 집중에 필요한 도구를 모두 제공합니다.
               </p>
@@ -301,7 +327,10 @@ export default function HomePage() {
         </section>
 
         {/* Pricing */}
-        <section id="pricing" className="border-t border-border/50 px-4 py-16 sm:py-24 scroll-mt-14">
+        <section
+          id="pricing"
+          className="border-t border-border/50 px-4 py-16 sm:py-24 scroll-mt-14"
+        >
           <div className="mx-auto max-w-4xl">
             <div className="mb-12 text-center space-y-3">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -370,9 +399,7 @@ export default function HomePage() {
         <section className="border-t border-border/50 px-4 py-16 sm:py-24">
           <div className="mx-auto max-w-4xl">
             <div className="mb-12 text-center space-y-3">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                사용자들의 이야기
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">사용자들의 이야기</h2>
               <p className="text-sm text-muted-foreground">
                 실제 사용자들이 FocusFlow와 함께 경험한 변화입니다.
               </p>
@@ -380,7 +407,10 @@ export default function HomePage() {
 
             <div className="grid gap-5 sm:grid-cols-3">
               {testimonials.map((t) => (
-                <div key={t.name} className="rounded-2xl border border-border bg-card p-6 space-y-4">
+                <div
+                  key={t.name}
+                  className="rounded-2xl border border-border bg-card p-6 space-y-4"
+                >
                   <div className="flex gap-0.5">
                     {Array.from({ length: t.stars }).map((_, i) => (
                       <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -409,9 +439,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-3xl">
             <div className="rounded-2xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-200/50 dark:border-purple-800/50 p-8 text-center space-y-4">
               <div className="text-3xl">🧠</div>
-              <h2 className="text-xl font-bold sm:text-2xl">
-                당신의 집중력은 몇 점일까요?
-              </h2>
+              <h2 className="text-xl font-bold sm:text-2xl">당신의 집중력은 몇 점일까요?</h2>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                 2분만에 집중력 수준을 테스트하고, 맞춤 집중 전략을 받아보세요.
               </p>
@@ -430,9 +458,7 @@ export default function HomePage() {
         <section className="border-t border-border/50 px-4 py-16 sm:py-24">
           <div className="mx-auto max-w-2xl">
             <div className="mb-12 text-center space-y-3">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                자주 묻는 질문
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">자주 묻는 질문</h2>
             </div>
 
             <div className="space-y-3">
@@ -461,8 +487,8 @@ export default function HomePage() {
               지금 집중을 시작하세요
             </h2>
             <p className="text-sm text-muted-foreground">
-              무료로 시작하고, AI 코치와 함께 당신만의 최적 집중 루틴을 만들어보세요.
-              신용카드가 필요 없습니다.
+              무료로 시작하고, AI 코치와 함께 당신만의 최적 집중 루틴을 만들어보세요. 신용카드가
+              필요 없습니다.
             </p>
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
@@ -485,9 +511,15 @@ export default function HomePage() {
       <footer className="border-t border-border/50 px-4 py-8">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
-            <Link href="/blog" className="hover:text-foreground transition-colors">블로그</Link>
-            <Link href="/focus-test" className="hover:text-foreground transition-colors">집중력 테스트</Link>
-            <Link href="#pricing" className="hover:text-foreground transition-colors">가격</Link>
+            <Link href="/blog" className="hover:text-foreground transition-colors">
+              블로그
+            </Link>
+            <Link href="/focus-test" className="hover:text-foreground transition-colors">
+              집중력 테스트
+            </Link>
+            <Link href="#pricing" className="hover:text-foreground transition-colors">
+              가격
+            </Link>
           </div>
           <p className="text-xs text-muted-foreground">
             © 2026 FocusFlow. 1인 개발자를 위해 만들었습니다.

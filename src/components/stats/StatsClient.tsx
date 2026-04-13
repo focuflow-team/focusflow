@@ -2,8 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import {
-  BarChart, Bar, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
 } from 'recharts'
 import { format } from 'date-fns'
@@ -55,7 +61,11 @@ function formatMinutes(minutes: number): string {
   return m === 0 ? `${h}시간` : `${h}시간 ${m}분`
 }
 
-export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 'free' | 'pro' | 'team' }) {
+export function StatsClient({
+  subscriptionTier = 'free',
+}: {
+  subscriptionTier?: 'free' | 'pro' | 'team'
+}) {
   const [period, setPeriod] = useState<Period>('week')
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -141,9 +151,17 @@ export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 
             <div className="rounded-xl border border-border bg-card p-4 space-y-3">
               <h2 className="text-sm font-medium text-muted-foreground">일별 집중 시간 (분)</h2>
               <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={stats.dailyStats} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <BarChart
+                  data={stats.dailyStats}
+                  margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 11 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                   <Tooltip
                     content={({ active, payload }) => {
@@ -152,7 +170,9 @@ export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 
                       return (
                         <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
                           <p className="font-medium">{d.date}</p>
-                          <p className="text-muted-foreground">{formatMinutes(d.totalMinutes)} · {d.sessionCount}회</p>
+                          <p className="text-muted-foreground">
+                            {formatMinutes(d.totalMinutes)} · {d.sessionCount}회
+                          </p>
                         </div>
                       )
                     }}
@@ -168,9 +188,18 @@ export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 
             <div className="rounded-xl border border-border bg-card p-4 space-y-3">
               <h2 className="text-sm font-medium text-muted-foreground">월간 트렌드</h2>
               <ResponsiveContainer width="100%" height={140}>
-                <LineChart data={stats.dailyStats} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <LineChart
+                  data={stats.dailyStats}
+                  margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} interval={4} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={4}
+                  />
                   <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                   <Tooltip
                     content={({ active, payload }) => {
@@ -207,7 +236,9 @@ export function StatsClient({ subscriptionTier = 'free' }: { subscriptionTier?: 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h2 className="text-sm font-medium text-muted-foreground">최근 세션</h2>
             {stats.recentSessions.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">아직 완료된 세션이 없습니다.</p>
+              <p className="text-sm text-muted-foreground text-center py-4">
+                아직 완료된 세션이 없습니다.
+              </p>
             ) : (
               <ul className="divide-y divide-border">
                 {stats.recentSessions.map((s) => (
@@ -251,7 +282,9 @@ function SummaryCard({
   highlight?: boolean
 }) {
   return (
-    <div className={`rounded-xl border p-4 ${highlight ? 'border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/30' : 'border-border bg-card'}`}>
+    <div
+      className={`rounded-xl border p-4 ${highlight ? 'border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/30' : 'border-border bg-card'}`}
+    >
       <div className="flex items-center gap-2 text-muted-foreground mb-1">
         {icon}
         <span className="text-xs">{label}</span>
@@ -262,8 +295,8 @@ function SummaryCard({
 }
 
 function HourlyHeatmap({ data }: { data: HourlyStat[] }) {
-  const maxMinutes = Math.max(...data.map(d => d.totalMinutes), 1)
-  const blocks = data.filter(d => d.hour >= 6 && d.hour <= 23)
+  const maxMinutes = Math.max(...data.map((d) => d.totalMinutes), 1)
+  const blocks = data.filter((d) => d.hour >= 6 && d.hour <= 23)
 
   return (
     <div className="flex flex-wrap gap-1">
@@ -276,10 +309,7 @@ function HourlyHeatmap({ data }: { data: HourlyStat[] }) {
             title={`${d.hour}시: ${formatMinutes(d.totalMinutes)} (${d.sessionCount}회)`}
             className="relative group"
           >
-            <div
-              className="h-8 w-8 rounded-md bg-primary transition-all"
-              style={{ opacity }}
-            />
+            <div className="h-8 w-8 rounded-md bg-primary transition-all" style={{ opacity }} />
             <span className="absolute -bottom-4 left-0 right-0 text-center text-[9px] text-muted-foreground">
               {d.hour}
             </span>

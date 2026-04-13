@@ -5,7 +5,10 @@ import { subDays, format, getHours } from 'date-fns'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -18,7 +21,10 @@ export async function GET(request: NextRequest) {
     .single()
 
   if (!profile || profile.subscription_tier === 'free') {
-    return NextResponse.json({ error: 'Pro subscription required', code: 'PRO_REQUIRED' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Pro subscription required', code: 'PRO_REQUIRED' },
+      { status: 403 },
+    )
   }
 
   // Return cached insights (last 7 days)
@@ -36,7 +42,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -49,14 +58,19 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!profile || profile.subscription_tier === 'free') {
-    return NextResponse.json({ error: 'Pro subscription required', code: 'PRO_REQUIRED' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Pro subscription required', code: 'PRO_REQUIRED' },
+      { status: 403 },
+    )
   }
 
   // Fetch last 30 days of sessions for analysis
   const since = subDays(new Date(), 30).toISOString()
   const { data: sessions, error: sessionsError } = await supabase
     .from('focus_sessions')
-    .select('duration_minutes, started_at, ended_at, status, interruptions, mood_before, mood_after, task_name')
+    .select(
+      'duration_minutes, started_at, ended_at, status, interruptions, mood_before, mood_after, task_name',
+    )
     .eq('user_id', user.id)
     .eq('status', 'completed')
     .gte('started_at', since)
@@ -67,10 +81,13 @@ export async function POST(request: NextRequest) {
   }
 
   if (!sessions || sessions.length < 3) {
-    return NextResponse.json({
-      error: 'Not enough data',
-      message: '인사이트 생성을 위해 최소 3개의 완료된 세션이 필요합니다.',
-    }, { status: 422 })
+    return NextResponse.json(
+      {
+        error: 'Not enough data',
+        message: '인사이트 생성을 위해 최소 3개의 완료된 세션이 필요합니다.',
+      },
+      { status: 422 },
+    )
   }
 
   // Compute pattern stats for prompt
@@ -90,12 +107,18 @@ export async function POST(request: NextRequest) {
   }
 
   const avgDuration = Math.round(totalMinutes / sessions.length)
-  const bestHour = Object.entries(hourlyMap).sort((a, b) => b[1].totalMinutes - a[1].totalMinutes)[0]
+  const bestHour = Object.entries(hourlyMap).sort(
+    (a, b) => b[1].totalMinutes - a[1].totalMinutes,
+  )[0]
   const bestDay = Object.entries(dailyMap).sort((a, b) => b[1] - a[1])[0]
-  const avgMoodBefore = sessions.filter(s => s.mood_before != null).reduce((sum, s) => sum + (s.mood_before ?? 0), 0) /
-    (sessions.filter(s => s.mood_before != null).length || 1)
-  const avgMoodAfter = sessions.filter(s => s.mood_after != null).reduce((sum, s) => sum + (s.mood_after ?? 0), 0) /
-    (sessions.filter(s => s.mood_after != null).length || 1)
+  const avgMoodBefore =
+    sessions
+      .filter((s) => s.mood_before != null)
+      .reduce((sum, s) => sum + (s.mood_before ?? 0), 0) /
+    (sessions.filter((s) => s.mood_before != null).length || 1)
+  const avgMoodAfter =
+    sessions.filter((s) => s.mood_after != null).reduce((sum, s) => sum + (s.mood_after ?? 0), 0) /
+    (sessions.filter((s) => s.mood_after != null).length || 1)
 
   const statsContext = `
 사용자의 최근 30일 집중 세션 데이터:
@@ -137,7 +160,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to ai_insights table
-    const rows = insightsData.slice(0, 3).map(item => ({
+    const rows = insightsData.slice(0, 3).map((item) => ({
       user_id: user.id,
       insight_type: (['pattern_analysis', 'recommendation', 'daily_summary'].includes(item.type)
         ? item.type

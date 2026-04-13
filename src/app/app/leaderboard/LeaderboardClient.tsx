@@ -62,9 +62,10 @@ export function LeaderboardClient({
     })
   }
 
-  const displayList = tab === 'following'
-    ? leaderboard.filter((e) => followingIds.has(e.user_id) || e.user_id === currentUserId)
-    : leaderboard
+  const displayList =
+    tab === 'following'
+      ? leaderboard.filter((e) => followingIds.has(e.user_id) || e.user_id === currentUserId)
+      : leaderboard
 
   return (
     <div className="w-full max-w-2xl space-y-6">
@@ -75,9 +76,7 @@ export function LeaderboardClient({
             <Trophy className="h-5 w-5 text-yellow-500" />
             주간 리더보드
           </h1>
-          <p className="text-xs text-muted-foreground">
-            이번 주 (월~일) 집중 시간 기준
-          </p>
+          <p className="text-xs text-muted-foreground">이번 주 (월~일) 집중 시간 기준</p>
         </div>
 
         {/* Public toggle */}
@@ -158,7 +157,10 @@ export function LeaderboardClient({
       ) : (
         <div className="space-y-2">
           {displayList.map((entry, i) => {
-            const rank = tab === 'global' ? i + 1 : leaderboard.findIndex((e) => e.user_id === entry.user_id) + 1
+            const rank =
+              tab === 'global'
+                ? i + 1
+                : leaderboard.findIndex((e) => e.user_id === entry.user_id) + 1
             const isMe = entry.user_id === currentUserId
             const isFollowing = followingIds.has(entry.user_id)
 
@@ -191,9 +193,7 @@ export function LeaderboardClient({
                     {entry.display_name ?? entry.username ?? '익명'}
                     {isMe && <span className="ml-1.5 text-xs text-primary">(나)</span>}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {entry.weekly_sessions}세션 완료
-                  </p>
+                  <p className="text-xs text-muted-foreground">{entry.weekly_sessions}세션 완료</p>
                 </div>
 
                 {/* Focus time */}
@@ -232,7 +232,9 @@ export function LeaderboardClient({
       {!currentUserId && (
         <p className="text-center text-xs text-muted-foreground pt-2">
           리더보드에 참여하려면{' '}
-          <a href="/signup" className="text-primary hover:underline">가입</a>
+          <a href="/signup" className="text-primary hover:underline">
+            가입
+          </a>
           하고 프로필을 공개로 설정하세요.
         </p>
       )}

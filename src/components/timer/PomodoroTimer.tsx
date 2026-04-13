@@ -11,39 +11,44 @@ export function PomodoroTimer() {
   const [savingSession, setSavingSession] = useState(false)
   const [lastMessage, setLastMessage] = useState<string | null>(null)
 
-  const handleSessionComplete = useCallback(async (durationMinutes: number) => {
-    setSavingSession(true)
-    const startedAt = new Date(Date.now() - durationMinutes * 60 * 1000).toISOString()
-    try {
-      await fetch('/api/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          task_name: taskName || null,
-          duration_minutes: durationMinutes,
-          status: 'completed',
-          started_at: startedAt,
-        }),
-      })
-      // Fire-and-forget calendar event (no-op if not connected)
-      void fetch('/api/calendar/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          taskName: taskName || null,
-          startedAt,
-          durationMinutes,
-        }),
-      })
-      setLastMessage('세션 완료! 휴식을 취하세요.')
-    } catch {
-      // silently ignore — timer continues regardless
-    } finally {
-      setSavingSession(false)
-    }
-  }, [taskName])
+  const handleSessionComplete = useCallback(
+    async (durationMinutes: number) => {
+      setSavingSession(true)
+      const startedAt = new Date(Date.now() - durationMinutes * 60 * 1000).toISOString()
+      try {
+        await fetch('/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task_name: taskName || null,
+            duration_minutes: durationMinutes,
+            status: 'completed',
+            started_at: startedAt,
+          }),
+        })
+        // Fire-and-forget calendar event (no-op if not connected)
+        void fetch('/api/calendar/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            taskName: taskName || null,
+            startedAt,
+            durationMinutes,
+          }),
+        })
+        setLastMessage('세션 완료! 휴식을 취하세요.')
+      } catch {
+        // silently ignore — timer continues regardless
+      } finally {
+        setSavingSession(false)
+      }
+    },
+    [taskName],
+  )
 
-  const { state, remaining, start, pause, reset } = useTimer({ onSessionComplete: handleSessionComplete })
+  const { state, remaining, start, pause, reset } = useTimer({
+    onSessionComplete: handleSessionComplete,
+  })
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -52,7 +57,7 @@ export function PomodoroTimer() {
         type="text"
         placeholder="지금 집중할 작업을 입력하세요 (선택)"
         value={taskName}
-        onChange={e => setTaskName(e.target.value)}
+        onChange={(e) => setTaskName(e.target.value)}
         disabled={state.status === 'running'}
         className="w-full max-w-sm rounded-lg border border-border bg-background px-4 py-2 text-sm text-center placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
       />
@@ -75,12 +80,7 @@ export function PomodoroTimer() {
       </AnimatePresence>
 
       {/* Controls */}
-      <TimerControls
-        status={state.status}
-        onStart={start}
-        onPause={pause}
-        onReset={reset}
-      />
+      <TimerControls status={state.status} onStart={start} onPause={pause} onReset={reset} />
 
       {/* Pomodoro count */}
       <div className="flex items-center gap-2">
@@ -88,15 +88,14 @@ export function PomodoroTimer() {
           <div
             key={i}
             className={`h-3 w-3 rounded-full transition-colors ${
-              i < state.pomodoroCount % 4 || (state.pomodoroCount > 0 && state.pomodoroCount % 4 === 0)
+              i < state.pomodoroCount % 4 ||
+              (state.pomodoroCount > 0 && state.pomodoroCount % 4 === 0)
                 ? 'bg-primary'
                 : 'bg-muted'
             }`}
           />
         ))}
-        <span className="ml-2 text-sm text-muted-foreground">
-          총 {state.pomodoroCount}회 완료
-        </span>
+        <span className="ml-2 text-sm text-muted-foreground">총 {state.pomodoroCount}회 완료</span>
       </div>
 
       {/* Status messages */}

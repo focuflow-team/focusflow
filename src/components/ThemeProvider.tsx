@@ -26,8 +26,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const apply = () => {
-      const dark =
-        theme === 'dark' || (theme === 'system' && mq.matches)
+      const dark = theme === 'dark' || (theme === 'system' && mq.matches)
       document.documentElement.classList.toggle('dark', dark)
       setResolvedTheme(dark ? 'dark' : 'light')
     }

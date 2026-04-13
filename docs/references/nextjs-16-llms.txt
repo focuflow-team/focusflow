@@ -1,0 +1,66 @@
+---
+name: Next.js 16 LLM Digest
+description: Next.js 16 App Router 중 훈련 데이터와 다른 부분 요약
+verification_status: verified
+last_verified: 2026-04-13
+owner: harness
+---
+
+# Next.js 16 — LLM Digest (FocusFlow)
+
+> 최종검증: 2026-04-13 · 소스: node_modules/next/dist/docs/
+> 이 파일은 LLM이 훈련 데이터에 없는 부분을 빠르게 파악하기 위한 **요약**입니다. 세부는 실제 node_modules 문서를 확인하세요.
+
+## Breaking with your training data
+
+- Pages Router는 이 프로젝트에서 사용하지 않음. `pages/` 없음. App Router 단일.
+- `getServerSideProps`, `getStaticProps`는 없음.
+- 기본 파일 관례:
+  - `app/layout.tsx`(필수), `app/page.tsx`(라우트), `app/loading.tsx`, `app/error.tsx`, `app/not-found.tsx`
+  - API: `app/api/<...>/route.ts` with `export async function GET/POST/...`
+
+## Route Handlers
+
+- `import { NextRequest, NextResponse } from 'next/server'`
+- Request body: `await request.json()` / `await request.text()` / `await request.formData()`
+- `params`는 **async**: `{ params }: { params: Promise<{ slug: string }> }` → `const { slug } = await params`
+- `searchParams`도 async.
+
+## 렌더링 / 캐싱
+
+- Server Component가 기본. `'use client'` directive로 Client Component 명시.
+- `export const dynamic = 'force-dynamic'` — 빌드 타임 정적 생성 회피. (Supabase 등 env 의존 페이지에 필수)
+- `export const revalidate = N` — ISR.
+- fetch 캐싱: `fetch(url, { cache: 'force-cache' | 'no-store' })`. Next 16에서 기본값은 `no-store` 경향 — 의존하지 말고 명시.
+
+## Middleware
+
+- `middleware.ts`는 루트 또는 `src/`에 위치. 이 프로젝트는 **루트** `middleware.ts`.
+- `export const config = { matcher: [...] }`로 매칭 라우트 제한.
+- Node 런타임 기본. Fluid Compute에서 Node API 전체 가용.
+
+## Server Actions
+
+- 별도 파일 `'use server'` 또는 함수 상단 `'use server'`.
+- Form action에 직접 연결 가능.
+
+## Metadata
+
+- `app/*/page.tsx`에 `export const metadata: Metadata = { ... }` 또는 `generateMetadata()`.
+- `app/sitemap.ts`, `app/robots.ts`, `app/opengraph-image.tsx` 같은 관례 파일이 자동 처리.
+
+## 환경변수
+
+- `NEXT_PUBLIC_*`만 클라이언트에서 접근 가능.
+- 서버 전용 env를 `'use client'` 파일에서 참조하면 런타임에 `undefined`.
+
+## 흔한 실패
+
+- 빌드 시 `createClient()`가 모듈 톱레벨에서 실행돼 env 없어 터짐 → `force-dynamic` 설정 또는 getter 안에서 lazy 생성.
+- Client Component에서 서버 모듈 import → 클라이언트 번들 팽창 / 비밀 유출.
+- `cookies()`, `headers()`는 **async**: `const store = await cookies()`.
+
+## 참고
+
+- 로컬 문서 원본: `node_modules/next/dist/docs/**`
+- AGENTS.md의 경고를 기억하라: 훈련 데이터는 신뢰 불가, 항상 실제 파일 확인.

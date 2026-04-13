@@ -47,7 +47,7 @@ export default function LoginPage() {
             type="email"
             placeholder="이메일"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full rounded-md border px-3 py-2 text-sm"
           />
@@ -55,7 +55,7 @@ export default function LoginPage() {
             type="password"
             placeholder="비밀번호"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full rounded-md border px-3 py-2 text-sm"
           />

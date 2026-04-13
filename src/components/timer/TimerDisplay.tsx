@@ -45,10 +45,7 @@ export function TimerDisplay({ remaining, totalDuration, phase }: TimerDisplayPr
         {PHASE_LABELS[phase]}
       </p>
       {/* Scale down to 200px on small screens */}
-      <div
-        className="relative"
-        style={{ width: SIZE, height: SIZE }}
-      >
+      <div className="relative" style={{ width: SIZE, height: SIZE }}>
         <svg width={SIZE} height={SIZE} className="-rotate-90">
           <circle
             cx={SIZE / 2}

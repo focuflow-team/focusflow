@@ -12,13 +12,16 @@ interface AmbientPlayerProps {
 export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) {
   const { playing, activeSound, volume, autoPlay, play, stop, setVolume, setAutoPlay } = sound
 
-  const handleSoundClick = useCallback((id: SoundId) => {
-    if (activeSound === id && playing) {
-      stop()
-    } else {
-      play(id)
-    }
-  }, [activeSound, playing, play, stop])
+  const handleSoundClick = useCallback(
+    (id: SoundId) => {
+      if (activeSound === id && playing) {
+        stop()
+      } else {
+        play(id)
+      }
+    },
+    [activeSound, playing, play, stop],
+  )
 
   const canPlay = (tier: 'free' | 'pro') =>
     tier === 'free' || userTier === 'pro' || userTier === 'team'
@@ -31,7 +34,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
           <input
             type="checkbox"
             checked={autoPlay}
-            onChange={e => setAutoPlay(e.target.checked)}
+            onChange={(e) => setAutoPlay(e.target.checked)}
             className="rounded"
           />
           타이머 연동
@@ -40,7 +43,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
 
       {/* Sound grid */}
       <div className="grid grid-cols-3 gap-2">
-        {SOUND_PROFILES.map(profile => {
+        {SOUND_PROFILES.map((profile) => {
           const unlocked = canPlay(profile.tier)
           const isActive = activeSound === profile.id && playing
           return (
@@ -50,11 +53,12 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
               title={profile.description}
               disabled={!unlocked}
               className={`relative flex flex-col items-center gap-1 rounded-lg border px-2 py-3 text-center transition-all
-                ${isActive
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : unlocked
-                  ? 'border-border hover:border-primary/50 hover:bg-muted'
-                  : 'border-border bg-muted/30 cursor-not-allowed opacity-60'
+                ${
+                  isActive
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : unlocked
+                      ? 'border-border hover:border-primary/50 hover:bg-muted'
+                      : 'border-border bg-muted/30 cursor-not-allowed opacity-60'
                 }`}
             >
               <span className="text-xl leading-none">{profile.emoji}</span>
@@ -64,7 +68,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
               )}
               {isActive && (
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
-                  {[0, 1, 2].map(i => (
+                  {[0, 1, 2].map((i) => (
                     <span
                       key={i}
                       className="block h-2 w-0.5 rounded-full bg-primary animate-bounce"
@@ -92,7 +96,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
           max={1}
           step={0.01}
           value={volume}
-          onChange={e => setVolume(parseFloat(e.target.value))}
+          onChange={(e) => setVolume(parseFloat(e.target.value))}
           className="flex-1 h-1.5 accent-primary cursor-pointer"
         />
         <span className="text-xs text-muted-foreground w-8 text-right">
@@ -103,9 +107,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
       {/* Status */}
       {playing && activeSound && (
         <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-3">
-          <span>
-            재생 중: {SOUND_PROFILES.find(p => p.id === activeSound)?.label}
-          </span>
+          <span>재생 중: {SOUND_PROFILES.find((p) => p.id === activeSound)?.label}</span>
           <button
             onClick={stop}
             className="flex items-center gap-1 rounded px-2 py-0.5 hover:bg-destructive/10 hover:text-destructive transition-colors"
@@ -117,9 +119,7 @@ export function AmbientPlayer({ sound, userTier = 'free' }: AmbientPlayerProps) 
       )}
 
       {userTier === 'free' && (
-        <p className="text-[10px] text-muted-foreground">
-          🔒 Pro 플랜에서 모든 사운드 이용 가능
-        </p>
+        <p className="text-[10px] text-muted-foreground">🔒 Pro 플랜에서 모든 사운드 이용 가능</p>
       )}
     </div>
   )

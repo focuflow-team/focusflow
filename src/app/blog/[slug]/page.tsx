@@ -109,9 +109,7 @@ export default async function BlogPostPage({ params }: Props) {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               {post.title}
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              {post.description}
-            </p>
+            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{post.description}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span

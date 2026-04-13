@@ -4,7 +4,10 @@ import { getStripe } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -19,7 +22,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No Stripe customer found' }, { status: 404 })
   }
 
-  const origin = request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const origin =
+    request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const session = await getStripe().billingPortal.sessions.create({
     customer: profile.stripe_customer_id,

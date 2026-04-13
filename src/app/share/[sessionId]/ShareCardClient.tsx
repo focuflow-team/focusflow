@@ -28,9 +28,10 @@ function formatDate(dateStr: string) {
 export function ShareCardClient({ session }: Props) {
   const [copied, setCopied] = useState(false)
 
-  const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/share/${session.id}`
-    : `/share/${session.id}`
+  const shareUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/share/${session.id}`
+      : `/share/${session.id}`
 
   const shareText = session.task_name
     ? `"${session.task_name}" 작업을 ${session.duration_minutes}분 동안 집중 완료! 🎯 #FocusFlow #포모도로`
@@ -64,28 +65,21 @@ export function ShareCardClient({ session }: Props) {
         <div className="text-5xl font-bold tabular-nums">{session.duration_minutes}분</div>
         <div className="text-lg font-medium opacity-90">집중 완료! 🎯</div>
         {session.task_name && (
-          <div className="text-sm opacity-75 px-4">
-            &ldquo;{session.task_name}&rdquo;
-          </div>
+          <div className="text-sm opacity-75 px-4">&ldquo;{session.task_name}&rdquo;</div>
         )}
-        <div className="text-xs opacity-60 pt-1">
-          {formatDate(session.started_at)}
-        </div>
+        <div className="text-xs opacity-60 pt-1">{formatDate(session.started_at)}</div>
       </div>
 
       {/* Share Actions */}
       <div className="p-4 space-y-3">
-        <p className="text-xs text-muted-foreground text-center">
-          이 세션을 공유하세요
-        </p>
+        <p className="text-xs text-muted-foreground text-center">이 세션을 공유하세요</p>
 
         <div className="flex gap-2">
           <button
             onClick={handleTwitterShare}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
           >
-            <span className="text-sky-500 font-bold text-sm">𝕏</span>
-            X (Twitter)
+            <span className="text-sky-500 font-bold text-sm">𝕏</span>X (Twitter)
           </button>
 
           <button

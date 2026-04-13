@@ -37,7 +37,7 @@ export async function createFocusSessionEvent(
     startedAt: string
     durationMinutes: number
     calendarId?: string
-  }
+  },
 ) {
   const calendar = getCalendarClient(accessToken, refreshToken)
   const startTime = new Date(params.startedAt)

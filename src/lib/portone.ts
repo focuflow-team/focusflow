@@ -41,20 +41,23 @@ export async function chargeWithBillingKey({
   customerEmail: string
 }) {
   const planConfig = PORTONE_PLANS[plan]
-  const res = await fetch(`${PORTONE_API_BASE}/payments/${encodeURIComponent(paymentId)}/billing-key`, {
-    method: 'POST',
-    headers: apiHeaders(),
-    body: JSON.stringify({
-      billingKey,
-      orderName: planConfig.description,
-      amount: { total: planConfig.priceKRW },
-      currency: 'KRW',
-      customer: {
-        id: userId,
-        email: customerEmail,
-      },
-    }),
-  })
+  const res = await fetch(
+    `${PORTONE_API_BASE}/payments/${encodeURIComponent(paymentId)}/billing-key`,
+    {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        billingKey,
+        orderName: planConfig.description,
+        amount: { total: planConfig.priceKRW },
+        currency: 'KRW',
+        customer: {
+          id: userId,
+          email: customerEmail,
+        },
+      }),
+    },
+  )
 
   if (!res.ok) {
     const err = await res.text()

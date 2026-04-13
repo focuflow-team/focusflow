@@ -53,15 +53,18 @@ export function SettingsClient({
       <h1 className="text-2xl font-bold">설정</h1>
 
       {toast && (
-        <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
-          toast.type === 'success'
-            ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300'
-            : 'bg-destructive/10 border-destructive/20 text-destructive'
-        }`}>
-          {toast.type === 'success'
-            ? <CheckCircle className="h-4 w-4 shrink-0" />
-            : <XCircle className="h-4 w-4 shrink-0" />
-          }
+        <div
+          className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+            toast.type === 'success'
+              ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300'
+              : 'bg-destructive/10 border-destructive/20 text-destructive'
+          }`}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle className="h-4 w-4 shrink-0" />
+          ) : (
+            <XCircle className="h-4 w-4 shrink-0" />
+          )}
           {toast.message}
         </div>
       )}
@@ -102,7 +105,11 @@ export function SettingsClient({
               disabled={disconnecting}
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background hover:bg-muted px-3 py-1.5 text-sm transition-colors disabled:opacity-60"
             >
-              {disconnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
+              {disconnecting ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <XCircle className="h-3.5 w-3.5" />
+              )}
               연결 해제
             </button>
           </div>

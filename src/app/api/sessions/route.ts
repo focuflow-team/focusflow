@@ -4,13 +4,24 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const body = await request.json()
-  const { task_name, duration_minutes, break_duration_minutes, status, interruptions, mood_before, mood_after } = body
+  const {
+    task_name,
+    duration_minutes,
+    break_duration_minutes,
+    status,
+    interruptions,
+    mood_before,
+    mood_after,
+  } = body
 
   const { data, error } = await supabase
     .from('focus_sessions')
@@ -39,7 +50,10 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   const supabase = await createClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
