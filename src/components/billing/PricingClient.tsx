@@ -114,9 +114,10 @@ export function PricingClient({ currentTier }: { currentTier: 'free' | 'pro' | '
         issueName: `FocusFlow ${planLabel} 정기결제 등록`,
         displayAmount: planPriceKRW,
         currency: 'KRW',
-        ...(isEasyPay && !isKakaoPay && {
-          easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') as never },
-        }),
+        ...(isEasyPay &&
+          !isKakaoPay && {
+            easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') as never },
+          }),
       })
 
       if (!response) {

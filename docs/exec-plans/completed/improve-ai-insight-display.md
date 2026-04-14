@@ -1,7 +1,7 @@
 ---
 name: improve-ai-insight-display
 description: AI 인사이트 카드의 긴 단락 텍스트를 구조화된 포맷으로 개선해 가독성을 높인다
-verification_status: draft
+verification_status: verified
 last_verified: 2026-04-14
 owner: vljh246v
 branch: feat/improve-ai-insight-display

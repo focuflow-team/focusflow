@@ -30,6 +30,7 @@ argument-hint: '[선택사항: 특정 스킬 이름 또는 집중할 영역]'
 
 | 스킬                     | 설명                                                                                                | 커버 파일 패턴                                                                                              |
 | ------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `harness-task`           | ADR-0005 5-step loop 진입점. src/ 변경 요청 시 worktree + exec-plan 생성 후 구현 시작               | 모든 `src/` 변경 요청 (feat/fix/refactor/perf/chore)                                                        |
 | `verify-portone-billing` | PortOne V2 결제 통합 규칙 검증 (플랜 가격, KakaoPay, webhook 서명, CDN)                             | `src/components/billing/**`, `src/app/api/payment/**`, `src/lib/portone.ts`, `src/app/layout.tsx`           |
 | `verify-auth-pages`      | 인증 페이지 빌드 에러 방지 규칙 검증 (force-dynamic 필수)                                           | `src/app/(auth)/**/page.tsx`                                                                                |
 | `verify-ambient-sound`   | 앰비언트 사운드 프로파일 동기화 규칙 검증 (SoundId, SOUND_PROFILES, /public/sounds/ 파일 일치)      | `src/hooks/useAmbientSound.ts`, `public/sounds/**`                                                          |

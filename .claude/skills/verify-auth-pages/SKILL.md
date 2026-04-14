@@ -22,11 +22,11 @@ description: 인증 페이지의 빌드 에러 방지 규칙을 검증합니다.
 
 ## Related Files
 
-| File | Purpose |
-|------|---------|
-| `src/app/(auth)/login/page.tsx` | 로그인 페이지 — 이메일/소셜 로그인 |
-| `src/app/(auth)/signup/page.tsx` | 회원가입 페이지 |
-| `src/app/(auth)/layout.tsx` | 인증 영역 레이아웃 |
+| File                             | Purpose                            |
+| -------------------------------- | ---------------------------------- |
+| `src/app/(auth)/login/page.tsx`  | 로그인 페이지 — 이메일/소셜 로그인 |
+| `src/app/(auth)/signup/page.tsx` | 회원가입 페이지                    |
+| `src/app/(auth)/layout.tsx`      | 인증 영역 레이아웃                 |
 
 ## Workflow
 
@@ -69,6 +69,7 @@ grep -n "force-dynamic" src/app/\(auth\)/signup/page.tsx
 **PASS 기준:** `export const dynamic = 'force-dynamic'` 이 존재
 
 **FAIL:** 선언이 없는 경우 → `'use client'` 바로 다음 줄에 추가:
+
 ```typescript
 'use client'
 
@@ -89,6 +90,7 @@ head -5 src/app/\(auth\)/signup/page.tsx
 ```
 
 **PASS 기준:**
+
 - 1번째 줄: `'use client'`
 - 2번째 줄: 빈 줄 (선택)
 - 3번째 줄: `export const dynamic = 'force-dynamic'`
@@ -112,15 +114,15 @@ grep -n "redirectTo\|auth/callback" src/app/\(auth\)/login/page.tsx
 ## Output Format
 
 ```markdown
-| 검사 | 파일 | 결과 | 상세 |
-|------|------|------|------|
-| 'use client' 선언 | `login/page.tsx` | PASS | 1번째 줄 확인 |
-| force-dynamic 선언 | `login/page.tsx` | PASS | export 존재 |
-| 선언 순서 | `login/page.tsx` | PASS | 올바른 순서 |
-| OAuth redirectTo | `login/page.tsx` | PASS | /auth/callback |
-| 'use client' 선언 | `signup/page.tsx` | PASS | 1번째 줄 확인 |
-| force-dynamic 선언 | `signup/page.tsx` | PASS | export 존재 |
-| 선언 순서 | `signup/page.tsx` | PASS | 올바른 순서 |
+| 검사               | 파일              | 결과 | 상세           |
+| ------------------ | ----------------- | ---- | -------------- |
+| 'use client' 선언  | `login/page.tsx`  | PASS | 1번째 줄 확인  |
+| force-dynamic 선언 | `login/page.tsx`  | PASS | export 존재    |
+| 선언 순서          | `login/page.tsx`  | PASS | 올바른 순서    |
+| OAuth redirectTo   | `login/page.tsx`  | PASS | /auth/callback |
+| 'use client' 선언  | `signup/page.tsx` | PASS | 1번째 줄 확인  |
+| force-dynamic 선언 | `signup/page.tsx` | PASS | export 존재    |
+| 선언 순서          | `signup/page.tsx` | PASS | 올바른 순서    |
 ```
 
 ## Exceptions
