@@ -1,8 +1,8 @@
 ---
 name: feat-profile-settings
 description: 설정 페이지에 프로필 편집(표시 이름·사용자명) 섹션 추가 — 리더보드 익명 표시 해결
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: feat/feat-profile-settings
 ---
