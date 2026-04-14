@@ -1,8 +1,8 @@
 ---
 name: fix-ai-title-and-tone
 description: AI 인사이트 title의 한자어 조합 명사 금지 + content 번역체 표현 금지
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: harness
 branch: refactor/fix-ai-title-and-tone
 ---
