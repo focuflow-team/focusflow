@@ -12,20 +12,33 @@ export default async function SettingsPage() {
 
   let subscriptionTier: 'free' | 'pro' | 'team' = 'free'
   let calendarConnected = false
+  let displayName: string | null = null
+  let username: string | null = null
 
   if (user) {
     const [profileResult, calendarResult] = await Promise.all([
-      supabase.from('profiles').select('subscription_tier').eq('id', user.id).single(),
+      supabase
+        .from('profiles')
+        .select('subscription_tier, display_name, username')
+        .eq('id', user.id)
+        .single(),
       supabase.from('google_calendar_tokens').select('id').eq('user_id', user.id).single(),
     ])
 
-    if (profileResult.data?.subscription_tier) {
-      subscriptionTier = profileResult.data.subscription_tier as 'free' | 'pro' | 'team'
+    if (profileResult.data) {
+      subscriptionTier = (profileResult.data.subscription_tier as 'free' | 'pro' | 'team') ?? 'free'
+      displayName = profileResult.data.display_name
+      username = profileResult.data.username
     }
     calendarConnected = !calendarResult.error && !!calendarResult.data
   }
 
   return (
-    <SettingsClient subscriptionTier={subscriptionTier} calendarConnected={calendarConnected} />
+    <SettingsClient
+      subscriptionTier={subscriptionTier}
+      calendarConnected={calendarConnected}
+      displayName={displayName}
+      username={username}
+    />
   )
 }
