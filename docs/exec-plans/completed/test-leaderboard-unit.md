@@ -1,8 +1,8 @@
 ---
 name: test-leaderboard-unit
 description: LeaderboardClient 컴포넌트의 단위 테스트 작성 — 렌더링, 공개/비공개 토글, 팔로우, 탭 전환, 순위 표시
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: chore/test-leaderboard-unit
 ---

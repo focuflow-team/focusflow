@@ -22,6 +22,11 @@ if [[ "$file_path" != */src/* && "$file_path" != *"/src" ]]; then
   exit 0
 fi
 
+# --- 3b. Allow if the file is inside a worktree (.worktrees/) ---
+if [[ "$file_path" == *"/.worktrees/"* ]]; then
+  exit 0
+fi
+
 # --- 4. Check current branch ---
 branch=$(git branch --show-current 2>/dev/null || true)
 

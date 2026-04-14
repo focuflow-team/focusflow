@@ -227,13 +227,18 @@ Conventional Commits 필수. commit-msg hook이 검증합니다.
 
 ## Step 6: Complete
 
-PR 머지 후:
+검증 + 커밋 완료 후 바로 실행합니다 (GitHub PR 불필요):
 
 ```bash
 bash scripts/complete-task.sh <task-id>
 ```
 
-수행: exec-plan `active/` → `completed/` 이동, worktree 제거, `last_verified` 업데이트
+수행 순서:
+
+1. 워크트리 브랜치를 **develop에 로컬 머지** (`--no-ff`)
+2. 피처 브랜치 삭제
+3. exec-plan `active/` → `completed/` 이동, `last_verified` 업데이트
+4. worktree 제거
 
 **이 스크립트를 건너뛰지 않습니다.** `active/`는 실제로 진행 중인 작업만 반영해야 합니다.
 
@@ -262,7 +267,7 @@ exec-plan의 Approach 섹션을 수정하고 Revisions 섹션에 변경 내용�
 
 ## Meta-rule: agent-failures.md
 
-구현 중 하네스가 잡지 못한 실수를 발견하면 PR 머지 전에 `docs/agent-failures.md`에 기록합니다:
+구현 중 하네스가 잡지 못한 실수를 발견하면 `complete-task.sh` 실행 전에 `docs/agent-failures.md`에 기록합니다:
 
 ```markdown
 ## YYYY-MM-DD — <짧은 증상>
