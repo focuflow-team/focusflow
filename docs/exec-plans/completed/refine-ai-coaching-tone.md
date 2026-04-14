@@ -1,8 +1,8 @@
 ---
 name: refine-ai-coaching-tone
 description: AI 인사이트 시스템 프롬프트 말투를 '데이터 전문가' 톤으로 개선 — AI가 쓴 듯한 보고서체 탈피
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: refactor/refine-ai-coaching-tone
 ---
