@@ -1,8 +1,8 @@
 ---
 name: fix-ai-tone-naturalness
 description: AI 인사이트 말투 자연스러움 개선 — 구조 마커 노출·기계적 어미 반복 제거
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: refactor/fix-ai-tone-naturalness
 ---
