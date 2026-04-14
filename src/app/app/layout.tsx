@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt'
 import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration'
 import { LogoutButton } from '@/components/LogoutButton'
+import { NavLinks } from '@/components/NavLinks'
 
 export const metadata: Metadata = {
   title: '타이머',
@@ -35,24 +36,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             FocusFlow
           </Link>
           <nav className="flex items-center gap-0.5 sm:gap-3">
-            <Link
-              href="/app/stats"
-              className="rounded-md px-1.5 sm:px-2 py-1.5 text-xs sm:text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              통계
-            </Link>
-            <Link
-              href="/app/leaderboard"
-              className="rounded-md px-1.5 sm:px-2 py-1.5 text-xs sm:text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              리더보드
-            </Link>
-            <Link
-              href="/app/settings"
-              className="rounded-md px-1.5 sm:px-2 py-1.5 text-xs sm:text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              설정
-            </Link>
+            <NavLinks />
             <ThemeToggle />
             <LogoutButton />
           </nav>
