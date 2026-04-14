@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# 5-step loop Step 5 — active→completed 이동, worktree 정리.
+# 5-step loop Step 5 — develop 로컬 머지, active→completed 이동, worktree 정리.
 # 사용: bash scripts/complete-task.sh <task-id>
-# 전제: 브랜치는 이미 main/develop로 머지됨.
 set -euo pipefail
 
 TASK_ID="${1:-}"
@@ -10,12 +9,37 @@ if [ -z "$TASK_ID" ]; then
   exit 1
 fi
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+# git rev-parse --show-toplevel returns the worktree root if run inside a worktree.
+# We need the MAIN repo root, which is always the parent of .worktrees/.
+# Use --git-common-dir to find the shared git dir, then derive the main root.
+COMMON_DIR="$(git rev-parse --git-common-dir)"
+# common-dir is <main-repo>/.git — go up one level
+REPO_ROOT="$(cd "$COMMON_DIR/.." && pwd)"
 cd "$REPO_ROOT"
+
+# ── 1. develop 로컬 머지 ────────────────────────────────────────────────────
+WORKTREE_PATH=".worktrees/${TASK_ID}"
+
+if [ -d "$WORKTREE_PATH" ]; then
+  TASK_BRANCH=$(git -C "$WORKTREE_PATH" symbolic-ref --short HEAD 2>/dev/null || true)
+
+  if [ -n "$TASK_BRANCH" ] && [ "$TASK_BRANCH" != "develop" ] && [ "$TASK_BRANCH" != "main" ]; then
+    # 메인 체크아웃을 develop으로 전환
+    CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+    if [ "$CURRENT_BRANCH" != "develop" ]; then
+      echo "🔀 develop으로 전환..."
+      git checkout develop
+    fi
+
+    echo "🔀 develop에 머지: $TASK_BRANCH"
+    git merge --no-ff "$TASK_BRANCH" -m "Merge branch '$TASK_BRANCH' into develop"
+    git branch -d "$TASK_BRANCH" 2>/dev/null || true
+    echo "✅ 머지 완료 및 브랜치 삭제: $TASK_BRANCH"
+  fi
+fi
 
 ACTIVE="docs/exec-plans/active/${TASK_ID}.md"
 COMPLETED="docs/exec-plans/completed/${TASK_ID}.md"
-WORKTREE=".worktrees/${TASK_ID}"
 
 if [ ! -f "$ACTIVE" ]; then
   echo "⚠️  $ACTIVE 없음. 이미 완료됐거나 이름이 다릅니다."
@@ -25,7 +49,6 @@ else
   # 프런트매터 status를 verified로
   TODAY="$(date -u +%Y-%m-%d)"
   if command -v sed >/dev/null 2>&1; then
-    # last_verified 업데이트
     sed -i.bak -E "s/^last_verified:.*/last_verified: ${TODAY}/" "$COMPLETED" || true
     sed -i.bak -E "s/^verification_status:.*/verification_status: verified/" "$COMPLETED" || true
     rm -f "${COMPLETED}.bak"
@@ -33,13 +56,13 @@ else
   echo "📄 exec-plan 이동: $ACTIVE → $COMPLETED"
 fi
 
-if [ -d "$WORKTREE" ]; then
-  if git worktree list --porcelain | grep -q "worktree $(pwd)/$WORKTREE"; then
-    git worktree remove "$WORKTREE" --force
-    echo "🧹 worktree 제거: $WORKTREE"
+if [ -d "$WORKTREE_PATH" ]; then
+  if git worktree list --porcelain | grep -q "worktree $(pwd)/$WORKTREE_PATH"; then
+    git worktree remove "$WORKTREE_PATH" --force
+    echo "🧹 worktree 제거: $WORKTREE_PATH"
   else
-    rm -rf "$WORKTREE"
-    echo "🧹 orphan 디렉터리 제거: $WORKTREE"
+    rm -rf "$WORKTREE_PATH"
+    echo "🧹 orphan 디렉터리 제거: $WORKTREE_PATH"
   fi
 fi
 
