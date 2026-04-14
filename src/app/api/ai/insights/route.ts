@@ -285,16 +285,21 @@ ${recentSessions}
 2. type: "recommendation" — 패턴을 근거로 내일 당장 할 수 있는 행동 1가지
 3. type: "daily_summary" — 전체 흐름 2~3줄 요약
 
-## 각 content 작성 방식
-- **문장은 짧게. 한 문장에 하나의 사실만.**
-- **한 인사이트당 반드시 4~6문장. 250~350자. 3문장 이하면 실패.**
-- 첫 문장: 발견한 패턴을 수치와 함께 한 줄로 (두 변수 이상)
-- 둘째 문장: 세션 로그에서 가져온 구체적인 날짜·태스크 예시 1개 이상 포함
-- 셋째 문장: 그게 왜 의미있는지 또는 반례·조건 한 줄로
-- 넷째 문장 이후: 패턴이 더 구체적으로 드러나는 조건이나 맥락 추가
+## 각 인사이트 필드 작성 방식
+
+### summary (한 줄 핵심 발견)
+- 30자 이내, 수치 포함, 두 변수 이상을 교차한 결과
+- 예: "저녁 세션 완주율이 오전보다 23% 높음"
+
+### content (상세 분석, 문장 배열)
+- **반드시 각 문장을 \\n으로 구분한 4~6문장. 총 250~350자.**
+- 첫 문장: summary의 근거가 되는 수치와 교차 변수
+- 둘째 문장: 세션 로그에서 가져온 구체적인 날짜·태스크 예시 1개 이상
+- 셋째 문장: 그게 왜 의미있는지 또는 반례·조건
+- 넷째 문장 이후: 패턴이 더 구체적으로 드러나는 조건이나 맥락
 - recommendation 마지막 문장: 내일 구체적 행동 (시간 + 태스크명)
 
-## title 작성 방식
+### title 작성 방식
 - 10자 이내, 명사형 또는 짧은 서술형
 - 핵심 발견을 압축
 
@@ -303,11 +308,11 @@ ${recentSessions}
 - "열심히", "꾸준히", "응원", "격려" 등 감정적 표현
 - 단일 집계 수치만 읽어주는 관찰
 
-응답 형식: JSON 객체 { "insights": [ { "type": "...", "title": "10자 이내 제목", "content": "250~350자" } ] }`,
+응답 형식: JSON 객체 { "insights": [ { "type": "...", "title": "10자 이내", "summary": "한 줄 핵심 발견 (30자 이내)", "content": "\\n으로 구분된 4~6문장" } ] }`,
         },
         {
           role: 'user',
-          content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 문장마다 끊어서 4~6문장으로 작성해 주세요. 각 인사이트는 250자 이상이어야 합니다.`,
+          content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 문장마다 \\n으로 구분해 4~6문장으로 작성하고, summary는 30자 이내 한 줄 핵심 발견으로 작성해 주세요. 각 인사이트는 250자 이상이어야 합니다.`,
         },
       ],
       response_format: { type: 'json_object' },
@@ -315,7 +320,7 @@ ${recentSessions}
       temperature: 0.6,
     })
 
-    let insightsData: { type: string; title: string; content: string }[] = []
+    let insightsData: { type: string; title: string; summary?: string; content: string }[] = []
     try {
       const parsed = JSON.parse(completion.choices[0].message.content ?? '{}')
       insightsData = Array.isArray(parsed) ? parsed : (parsed.insights ?? parsed.items ?? [])
@@ -330,7 +335,12 @@ ${recentSessions}
         ? item.type
         : 'pattern_analysis') as 'pattern_analysis' | 'recommendation' | 'daily_summary',
       content: item.content,
-      metadata: { title: item.title, sessionCount: sessions.length, avgDuration },
+      metadata: {
+        title: item.title,
+        summary: item.summary ?? null,
+        sessionCount: sessions.length,
+        avgDuration,
+      },
     }))
 
     const { data: saved, error: saveError } = await supabase
