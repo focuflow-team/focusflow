@@ -1,8 +1,8 @@
 ---
 name: fix-pomodoro-completion-double-count
 description: 포모도로 타이머 완료 시 onSessionComplete가 중복 호출되어 완료 횟수가 2개 이상 증가하는 버그 수정
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: fix/fix-pomodoro-completion-double-count
 ---
