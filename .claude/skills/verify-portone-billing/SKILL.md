@@ -23,13 +23,13 @@ description: PortOne V2 결제 통합 규칙을 검증합니다. 플랜 가격 �
 
 ## Related Files
 
-| File | Purpose |
-|------|---------|
-| `src/lib/portone.ts` | PORTONE_PLANS 상수 및 결제 API 헬퍼 (가격 진실 공급원) |
-| `src/components/billing/PricingClient.tsx` | 클라이언트 결제 UI, 빌링키 발급 |
-| `src/app/api/payment/webhook/route.ts` | PortOne webhook 수신 및 서명 검증 |
-| `src/app/api/payment/subscribe/route.ts` | 빌링키 등록 및 첫 결제 수행 |
-| `src/app/layout.tsx` | PortOne CDN script preload |
+| File                                       | Purpose                                                |
+| ------------------------------------------ | ------------------------------------------------------ |
+| `src/lib/portone.ts`                       | PORTONE_PLANS 상수 및 결제 API 헬퍼 (가격 진실 공급원) |
+| `src/components/billing/PricingClient.tsx` | 클라이언트 결제 UI, 빌링키 발급                        |
+| `src/app/api/payment/webhook/route.ts`     | PortOne webhook 수신 및 서명 검증                      |
+| `src/app/api/payment/subscribe/route.ts`   | 빌링키 등록 및 첫 결제 수행                            |
+| `src/app/layout.tsx`                       | PortOne CDN script preload                             |
 
 ## Workflow
 
@@ -92,13 +92,17 @@ grep -n "isKakaoPay\|easyPayProvider\|EASY_PAY_KAKAOPAY" src/components/billing/
 ```
 
 **PASS 기준:**
+
 - `isKakaoPay` 플래그가 존재함
 - `easyPayProvider`는 `!isKakaoPay` 조건하에서만 전달됨
 
 **FAIL 예시:** 아래와 같이 KakaoPay에도 `easyPayProvider`를 전달하는 경우:
+
 ```typescript
 // 잘못된 코드
-easyPay: { easyPayProvider: selectedMethod.replace('EASY_PAY_', '') }
+easyPay: {
+  easyPayProvider: selectedMethod.replace('EASY_PAY_', '')
+}
 // KakaoPay의 경우 easyPayProvider: 'KAKAOPAY' 전달 → PortOne 오류 발생
 ```
 
@@ -117,14 +121,16 @@ grep -n "whsec_\|replace\|base64\|secretBytes\|createHmac" src/app/api/payment/w
 ```
 
 **PASS 기준:**
+
 - `secret.replace(/^whsec_/, '')` 로 prefix 제거
 - `Buffer.from(..., 'base64')` 로 디코딩하여 `secretBytes` 생성
 - `crypto.createHmac('sha256', secretBytes)` 로 HMAC 생성
 
 **FAIL 예시:** `secret` 문자열 전체를 HMAC 키로 직접 사용하는 경우:
+
 ```typescript
 // 잘못된 코드
-crypto.createHmac('sha256', secret)  // whsec_ prefix가 포함된 문자열 전체 사용
+crypto.createHmac('sha256', secret) // whsec_ prefix가 포함된 문자열 전체 사용
 ```
 
 ---
@@ -162,15 +168,15 @@ grep -n "PORTONE_PLANS\|portone\|6900\|18000" src/app/api/payment/subscribe/rout
 ## Output Format
 
 ```markdown
-| 검사 | 파일 | 결과 | 상세 |
-|------|------|------|------|
-| 플랜 가격 기준값 | `src/lib/portone.ts` | PASS | pro=6900, team=18000 |
-| PricingClient 가격 | `PricingClient.tsx` | PASS | 일치 확인 |
-| Webhook 가격 | `webhook/route.ts` | PASS | >= 18000 team, >= 6900 pro |
-| KakaoPay easyPayProvider | `PricingClient.tsx` | PASS | isKakaoPay 조건 존재 |
-| Webhook 서명 검증 | `webhook/route.ts` | PASS | whsec_ 처리 및 HMAC 확인 |
-| CDN Script | `layout.tsx` | PASS | afterInteractive 전략 |
-| subscribe PORTONE_PLANS | `subscribe/route.ts` | PASS | import 확인 |
+| 검사                     | 파일                 | 결과 | 상세                       |
+| ------------------------ | -------------------- | ---- | -------------------------- |
+| 플랜 가격 기준값         | `src/lib/portone.ts` | PASS | pro=6900, team=18000       |
+| PricingClient 가격       | `PricingClient.tsx`  | PASS | 일치 확인                  |
+| Webhook 가격             | `webhook/route.ts`   | PASS | >= 18000 team, >= 6900 pro |
+| KakaoPay easyPayProvider | `PricingClient.tsx`  | PASS | isKakaoPay 조건 존재       |
+| Webhook 서명 검증        | `webhook/route.ts`   | PASS | whsec\_ 처리 및 HMAC 확인  |
+| CDN Script               | `layout.tsx`         | PASS | afterInteractive 전략      |
+| subscribe PORTONE_PLANS  | `subscribe/route.ts` | PASS | import 확인                |
 ```
 
 ## Exceptions
