@@ -64,26 +64,34 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Rate limit: 하루 3회만 생성 허용
-  const DAILY_LIMIT = 3
-  const todayStart = new Date()
-  todayStart.setHours(0, 0, 0, 0)
-  const { data: todayInsights } = await supabase
-    .from('ai_insights')
-    .select('created_at')
-    .eq('user_id', user.id)
-    .gte('created_at', todayStart.toISOString())
-    .order('created_at', { ascending: false })
+  // Rate limit: 하루 3회만 생성 허용 (DEV_BYPASS_EMAILS에 등록된 계정은 제외)
+  const devBypassEmails = (process.env.DEV_BYPASS_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim())
+    .filter(Boolean)
+  const isDevBypass = user.email != null && devBypassEmails.includes(user.email)
 
-  const usedToday = Math.floor((todayInsights?.length ?? 0) / 3) // 인사이트 3개 = 1회 분석
-  if (usedToday >= DAILY_LIMIT) {
-    return NextResponse.json(
-      {
-        error: 'Rate limited',
-        message: `오늘 분석 횟수(${DAILY_LIMIT}회)를 모두 사용했습니다. 내일 다시 이용해 주세요.`,
-      },
-      { status: 429 },
-    )
+  if (!isDevBypass) {
+    const DAILY_LIMIT = 3
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+    const { data: todayInsights } = await supabase
+      .from('ai_insights')
+      .select('created_at')
+      .eq('user_id', user.id)
+      .gte('created_at', todayStart.toISOString())
+      .order('created_at', { ascending: false })
+
+    const usedToday = Math.floor((todayInsights?.length ?? 0) / 3) // 인사이트 3개 = 1회 분석
+    if (usedToday >= DAILY_LIMIT) {
+      return NextResponse.json(
+        {
+          error: 'Rate limited',
+          message: `오늘 분석 횟수(${DAILY_LIMIT}회)를 모두 사용했습니다. 내일 다시 이용해 주세요.`,
+        },
+        { status: 429 },
+      )
+    }
   }
 
   // Fetch last 30 days of ALL sessions (completed + interrupted) for richer analysis
