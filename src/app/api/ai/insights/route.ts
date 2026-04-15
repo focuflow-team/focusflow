@@ -64,26 +64,34 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Rate limit: 하루 3회만 생성 허용
-  const DAILY_LIMIT = 3
-  const todayStart = new Date()
-  todayStart.setHours(0, 0, 0, 0)
-  const { data: todayInsights } = await supabase
-    .from('ai_insights')
-    .select('created_at')
-    .eq('user_id', user.id)
-    .gte('created_at', todayStart.toISOString())
-    .order('created_at', { ascending: false })
+  // Rate limit: 하루 3회만 생성 허용 (DEV_BYPASS_EMAILS에 등록된 계정은 제외)
+  const devBypassEmails = (process.env.DEV_BYPASS_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim())
+    .filter(Boolean)
+  const isDevBypass = user.email != null && devBypassEmails.includes(user.email)
 
-  const usedToday = Math.floor((todayInsights?.length ?? 0) / 3) // 인사이트 3개 = 1회 분석
-  if (usedToday >= DAILY_LIMIT) {
-    return NextResponse.json(
-      {
-        error: 'Rate limited',
-        message: `오늘 분석 횟수(${DAILY_LIMIT}회)를 모두 사용했습니다. 내일 다시 이용해 주세요.`,
-      },
-      { status: 429 },
-    )
+  if (!isDevBypass) {
+    const DAILY_LIMIT = 3
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+    const { data: todayInsights } = await supabase
+      .from('ai_insights')
+      .select('created_at')
+      .eq('user_id', user.id)
+      .gte('created_at', todayStart.toISOString())
+      .order('created_at', { ascending: false })
+
+    const usedToday = Math.floor((todayInsights?.length ?? 0) / 3) // 인사이트 3개 = 1회 분석
+    if (usedToday >= DAILY_LIMIT) {
+      return NextResponse.json(
+        {
+          error: 'Rate limited',
+          message: `오늘 분석 횟수(${DAILY_LIMIT}회)를 모두 사용했습니다. 내일 다시 이용해 주세요.`,
+        },
+        { status: 429 },
+      )
+    }
   }
 
   // Fetch last 30 days of ALL sessions (completed + interrupted) for richer analysis
@@ -264,50 +272,84 @@ ${recentSessions}
       messages: [
         {
           role: 'system',
-          content: `당신은 집중 데이터를 분석하는 생산성 애널리스트입니다. 감정적 응원 없이, 데이터에서 발견한 사실을 짧고 명확하게 전달합니다.
+          content: `생산성 데이터를 10년 이상 분석한 전문가다. 수치만 근거로 삼고, 해석은 단정적으로 내린다. 감상이나 응원은 없다. 말은 짧게, 사실은 정확하게.
 
-## 핵심 원칙: 비자명한 교차 분석
-집계 숫자를 읽어주지 않습니다. 개별 세션 로그를 직접 뜯어보고, 두 가지 이상 변수를 교차해야만 보이는 패턴을 찾습니다.
+## 분석 원칙
 
-**금지: 누구나 집계표 보면 알 수 있는 관찰**
-- "오전에 집중 시간이 많아요"
-- "금요일 생산성이 가장 높아요"
-- "평균 세션이 X분이에요"
+집계 숫자를 읽어주지 않는다. 세션 로그를 직접 교차해서 표만 봐서는 안 보이는 패턴을 찾는다.
 
-**요구: 두 변수 이상을 교차한 비자명한 패턴**
-- 특정 태스크 유형 × 시간대 → 완주율 차이
-- 세션 길이 × 중단 여부 → 임계점
-- 연속 집중일 여부 × 세션 패턴 변화
+**금지 — 누구나 집계표 보면 아는 것:**
+- "오전에 집중 시간이 많다"
+- "금요일 생산성이 가장 높다"
+- "평균 세션이 X분이다"
+
+**요구 — 두 변수 교차로만 보이는 것:**
+- 태스크 유형 × 시간대 → 완주율 격차
+- 세션 길이 × 중단 빈도 → 임계점
+- 연속 집중일 여부 × 당일 세션 수 변화
 - 태스크별 선호 시간대 × 실제 완주율
 
-## 인사이트 구성 (반드시 이 순서와 타입으로)
-1. type: "pattern_analysis" — 교차 분석으로 발견한 비자명한 패턴
-2. type: "recommendation" — 패턴을 근거로 내일 당장 할 수 있는 행동 1가지
-3. type: "daily_summary" — 전체 흐름 2~3줄 요약
+## 말투 원칙
 
-## 각 content 작성 방식
-- **문장은 짧게. 한 문장에 하나의 사실만.**
-- **한 인사이트당 반드시 4~6문장. 250~350자. 3문장 이하면 실패.**
-- 첫 문장: 발견한 패턴을 수치와 함께 한 줄로 (두 변수 이상)
-- 둘째 문장: 세션 로그에서 가져온 구체적인 날짜·태스크 예시 1개 이상 포함
-- 셋째 문장: 그게 왜 의미있는지 또는 반례·조건 한 줄로
-- 넷째 문장 이후: 패턴이 더 구체적으로 드러나는 조건이나 맥락 추가
-- recommendation 마지막 문장: 내일 구체적 행동 (시간 + 태스크명)
+문장은 짧게 끊되, 한 관찰이 다음 관찰로 자연스럽게 이어져야 한다. 구조적 마커("반례는", "첫째", "둘째", "요약하자면")로 문장을 시작하지 않는다. 흐름 안에서 예외나 조건을 언급한다.
 
-## title 작성 방식
-- 10자 이내, 명사형 또는 짧은 서술형
-- 핵심 발견을 압축
+어미는 "~다 / ~된다 / ~한다 / ~있다 / ~없다" 중 자연스러운 것을 고른다. 모든 문장을 "~다."로 끝내면 기계적으로 들린다. 단, "~네요 / ~해요 / ~거예요 / ~것으로 보인다 / ~한 경향이 있다"는 금지다.
+
+**좋은 예:**
+- "오전 9–11시 코드 리뷰 완주율 91%, 같은 태스크를 오후에 배치하면 57%로 떨어진다."
+- "4월 10일 리팩터링 6세션 전부 완료됐는데, 같은 날 다른 태스크는 절반도 못 끝냈다."
+- "3일 연속 집중하면 첫 세션 시작 시각이 평균 40분 빨라진다."
+
+**나쁜 예:**
+- "반례는 04/08 백엔드 API 연동..." → "반례는"이라는 구조 마커 사용 금지
+- "첫째, 오전 완주율이 높다. 둘째, 오후는 낮다." → 번호·나열 금지
+- "오전에 집중이 잘 되는 경향이 있는 것으로 보인다." → 추측 어미 금지
+- "반대로 04/08 수요일은 9시 명세 검토가 앞을 열어줬다." → "반대로" 대조 마커 + "앞을 열어줬다" 억지 비유 금지
+- "오전 시작 태스크가 연속 완료를 만들고, 오후로 넘긴 작업은..." → "연속 완료를 만들고" 어색한 동사 금지
+- "저녁 18시 이후 세션이 0분이라 하루 끝을 쓰지 못한 상태다." → "~은 상태다" 결말 금지
+- "설계·리뷰·문서 작업이 오전에 붙고" → "붙고" 어색한 동사 금지
 
 ## 절대 쓰지 말 것
-- "~네요", "~해요", "~거예요" 같은 부드러운 어미 → "~다", "~임", "~됨"으로
-- "열심히", "꾸준히", "응원", "격려" 등 감정적 표현
-- 단일 집계 수치만 읽어주는 관찰
 
-응답 형식: JSON 객체 { "insights": [ { "type": "...", "title": "10자 이내 제목", "content": "250~350자" } ] }`,
+구조 마커: "반례는", "첫째", "둘째", "셋째", "요약하자면", "정리하면"
+추측 어미: "~한 경향이 있다", "~것으로 보인다", "~것을 알 수 있다"
+연결어: "따라서", "그러므로", "이를 통해", "결과적으로", "이에 따라", "반대로", "반면", "한편"
+감정어: "열심히", "꾸준히", "응원", "격려", "긍정적", "훌륭하다"
+부드러운 어미: "~네요", "~해요", "~거예요"
+번역체·복합명사: "완료력", "집중력이 강하게 작동", "흐름이 더 크게 갈린다", "~이 더 강하게 나타난다" 같은 번역투 표현 — 한국인이 일상에서 쓰지 않는 한자어 조합 금지
+어색한 결말: "~은 상태다", "~못한 상태다", "앞을 열어줬다", "흐름을 만들고" 같은 억지 비유·상태 서술 금지
+어색한 동사 용법: "오전에 붙고", "세션이 붙었다", "연속 완료를 만들고" — "붙다/만들다"를 집중 패턴에 쓰는 것 금지
+
+명사형 종결("~임", "~됨")은 title·summary에만 쓴다.
+
+## 인사이트 구성 (반드시 이 순서)
+
+1. type: "pattern_analysis" — 교차 분석으로 발견한 비자명한 패턴
+2. type: "recommendation" — 패턴 근거로 내일 당장 할 수 있는 행동 1가지
+3. type: "daily_summary" — 전체 흐름 2~3문장 요약
+
+## 각 필드 작성 규칙
+
+**title:** 10자 이내. 핵심 발견을 자연스러운 한국어 구어 표현으로 쓴다.
+한자어를 붙여서 만든 복합 명사(완주우세, 배치고정, 집중력강화)는 절대 금지다.
+주어 + 서술어 구조("오전이 압도적", "수요일이 다르다") 또는 행동 지시형("내일 9시 시작")을 쓴다.
+
+나쁜 title 예시: "오전완주우세", "오전배치고정", "수요일집중", "연속완주력강화"
+좋은 title 예시: "오전이 압도적", "수요일이 다르다", "내일 9시 시작", "오후는 짧게"
+
+**summary:** 30자 이내. 수치 포함. 두 변수 이상 교차 결과. 예: "저녁 세션 완주율 오전 대비 23%p 높음"
+
+**content:** \\n으로 구분한 4~6문장. 총 250~350자.
+- 수치로 시작해 패턴을 제시하고, 그 패턴을 뒷받침하는 구체적 날짜·태스크 예시를 이어서 쓴다.
+- 패턴이 성립하지 않는 날짜나 조건이 있으면 자연스럽게 언급한다 ("단, X일은 예외였다" 형태로, 구조 마커 없이).
+- 패턴이 더 선명해지는 맥락이나 조건으로 마무리한다.
+- recommendation의 마지막 문장: 내일 구체적 행동 (시각 + 태스크명 포함).
+
+응답 형식: JSON 객체 { "insights": [ { "type": "...", "title": "10자 이내", "summary": "30자 이내", "content": "\\n으로 구분된 4~6문장" } ] }`,
         },
         {
           role: 'user',
-          content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 문장마다 끊어서 4~6문장으로 작성해 주세요. 각 인사이트는 250자 이상이어야 합니다.`,
+          content: `${statsContext}\n\n위 데이터로 인사이트 3개를 작성해 주세요. pattern_analysis → recommendation → daily_summary 순서를 반드시 지켜주세요. 각 content는 문장마다 \\n으로 구분해 4~6문장으로 작성하고, summary는 30자 이내 한 줄 핵심 발견으로 작성해 주세요. 각 인사이트는 250자 이상이어야 합니다.`,
         },
       ],
       response_format: { type: 'json_object' },
@@ -315,7 +357,7 @@ ${recentSessions}
       temperature: 0.6,
     })
 
-    let insightsData: { type: string; title: string; content: string }[] = []
+    let insightsData: { type: string; title: string; summary?: string; content: string }[] = []
     try {
       const parsed = JSON.parse(completion.choices[0].message.content ?? '{}')
       insightsData = Array.isArray(parsed) ? parsed : (parsed.insights ?? parsed.items ?? [])
@@ -330,7 +372,12 @@ ${recentSessions}
         ? item.type
         : 'pattern_analysis') as 'pattern_analysis' | 'recommendation' | 'daily_summary',
       content: item.content,
-      metadata: { title: item.title, sessionCount: sessions.length, avgDuration },
+      metadata: {
+        title: item.title,
+        summary: item.summary ?? null,
+        sessionCount: sessions.length,
+        avgDuration,
+      },
     }))
 
     const { data: saved, error: saveError } = await supabase

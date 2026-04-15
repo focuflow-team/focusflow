@@ -64,43 +64,69 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
   const baseElapsedRef = useRef<number>(0)
   const rafRef = useRef<number | null>(null)
 
+  // Mirror of state kept in sync via useEffect so tick can read current values
+  // without depending on state in its closure (which would cause stale captures).
+  const stateRef = useRef(state)
+
+  // Keep a ref so visibilitychange can always call the latest version of tick
+  // without needing tick in its dependency array (which caused listener accumulation)
+  const tickRef = useRef<(() => void) | null>(null)
+
   const tick = useCallback(() => {
     if (startedAtRef.current === null) return
 
     const now = Date.now()
     const elapsed = baseElapsedRef.current + Math.floor((now - startedAtRef.current) / 1000)
 
-    setState((prev) => {
-      if (elapsed >= prev.totalDuration) {
-        // Phase complete
-        if (prev.phase === 'work') {
-          const newCount = prev.pomodoroCount + 1
-          onSessionComplete?.(prev.totalDuration / 60)
-          const nextPhase = phaseForCount(newCount)
-          const nextDuration = durationForPhase(nextPhase)
-          return {
-            phase: nextPhase,
-            status: 'stopped',
-            elapsed: 0,
-            totalDuration: nextDuration,
-            pomodoroCount: newCount,
-          }
-        } else {
-          // Break finished — go back to work
-          return {
-            phase: 'work',
-            status: 'stopped',
-            elapsed: 0,
-            totalDuration: WORK_DURATION,
-            pomodoroCount: prev.pomodoroCount,
-          }
-        }
-      }
-      return { ...prev, elapsed }
-    })
+    // Read current phase/totalDuration from ref so we can decide completion
+    // BEFORE calling setState. React 18 batches setState — if we set a flag
+    // inside the updater and read it after setState() returns, the updater may
+    // not have run yet, so the flag would always be false.
+    const { phase, totalDuration, pomodoroCount } = stateRef.current
 
-    rafRef.current = requestAnimationFrame(tick)
+    if (elapsed >= totalDuration) {
+      // Phase complete — stop the clock and notify caller exactly once
+      startedAtRef.current = null
+      rafRef.current = null
+
+      if (phase === 'work') {
+        const newCount = pomodoroCount + 1
+        const nextPhase = phaseForCount(newCount)
+        const nextDuration = durationForPhase(nextPhase)
+        setState({
+          phase: nextPhase,
+          status: 'stopped',
+          elapsed: 0,
+          totalDuration: nextDuration,
+          pomodoroCount: newCount,
+        })
+      } else {
+        // Break finished — go back to work
+        setState({
+          phase: 'work',
+          status: 'stopped',
+          elapsed: 0,
+          totalDuration: WORK_DURATION,
+          pomodoroCount,
+        })
+      }
+
+      onSessionComplete?.(totalDuration / 60)
+    } else {
+      setState((prev) => ({ ...prev, elapsed }))
+      rafRef.current = requestAnimationFrame(tick)
+    }
   }, [onSessionComplete])
+
+  // Keep stateRef current so tick always sees the latest state values
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  // Keep tickRef current so visibilitychange handler always has the latest tick
+  useEffect(() => {
+    tickRef.current = tick
+  }, [tick])
 
   // Start / resume
   const start = useCallback(() => {
@@ -151,13 +177,14 @@ export function useTimer({ onSessionComplete }: UseTimerOptions = {}) {
         // Re-sync elapsed from wall clock on tab restore — already handled by tick()
         // Just re-queue a frame if somehow stopped
         if (rafRef.current === null && startedAtRef.current !== null) {
-          rafRef.current = requestAnimationFrame(tick)
+          // Use tickRef so we don't need tick in deps (prevents listener accumulation)
+          rafRef.current = requestAnimationFrame(() => tickRef.current?.())
         }
       }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [state.status, tick])
+  }, [state.status]) // tick removed: tickRef.current always has the latest version
 
   useEffect(() => {
     return () => {

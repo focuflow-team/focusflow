@@ -7,12 +7,29 @@ interface AiInsight {
   id: string
   insight_type: 'pattern_analysis' | 'recommendation' | 'daily_summary'
   content: string
-  metadata: { title?: string; sessionCount?: number; avgDuration?: number } | null
+  metadata: { title?: string; summary?: string; sessionCount?: number; avgDuration?: number } | null
   created_at: string
 }
 
 interface AICoachCardProps {
   subscriptionTier: 'free' | 'pro' | 'team'
+}
+
+function InsightContent({ content }: { content: string }) {
+  const lines = content.split('\n').filter((l) => l.trim().length > 0)
+  if (lines.length <= 1) {
+    return <p className="text-xs leading-[1.75] text-foreground/80">{content}</p>
+  }
+  return (
+    <ul className="space-y-1.5">
+      {lines.map((line, i) => (
+        <li key={i} className="flex gap-2 text-xs leading-[1.75] text-foreground/80">
+          <span className="mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/40" />
+          <span>{line}</span>
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 const INSIGHT_ICONS = {
@@ -155,9 +172,14 @@ export function AICoachCard({ subscriptionTier }: AICoachCardProps) {
                 )}
               </div>
               {/* 본문 */}
-              <p className="px-4 py-3 text-xs leading-[1.75] text-foreground/80">
-                {insight.content}
-              </p>
+              <div className="px-4 py-3 space-y-2">
+                {insight.metadata?.summary && (
+                  <p className="text-xs font-semibold text-foreground bg-muted/60 rounded-md px-3 py-2">
+                    {insight.metadata.summary}
+                  </p>
+                )}
+                <InsightContent content={insight.content} />
+              </div>
             </li>
           ))}
         </ul>

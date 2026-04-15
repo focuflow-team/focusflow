@@ -1,21 +1,30 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calendar, CheckCircle, XCircle, Loader2, Lock, ExternalLink } from 'lucide-react'
+import { useState, useEffect, useTransition } from 'react'
+import { Calendar, CheckCircle, XCircle, Loader2, Lock, ExternalLink, User } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { updateProfileAction } from '@/app/app/settings/actions'
 
 export function SettingsClient({
   subscriptionTier,
   calendarConnected: initialConnected,
+  displayName: initialDisplayName,
+  username: initialUsername,
 }: {
   subscriptionTier: 'free' | 'pro' | 'team'
   calendarConnected: boolean
+  displayName: string | null
+  username: string | null
 }) {
   const searchParams = useSearchParams()
   const [calendarConnected, setCalendarConnected] = useState(initialConnected)
   const [disconnecting, setDisconnecting] = useState(false)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+
+  const [displayName, setDisplayName] = useState(initialDisplayName ?? '')
+  const [username, setUsername] = useState(initialUsername ?? '')
+  const [profilePending, startProfileTransition] = useTransition()
 
   const isPro = subscriptionTier === 'pro' || subscriptionTier === 'team'
 
@@ -48,6 +57,19 @@ export function SettingsClient({
     }
   }
 
+  const handleSaveProfile = () => {
+    startProfileTransition(async () => {
+      const result = await updateProfileAction(displayName, username)
+      if (result.success) {
+        setToast({ type: 'success', message: '프로필이 저장되었습니다.' })
+      } else if (result.error === 'username_taken') {
+        setToast({ type: 'error', message: '이미 사용 중인 사용자명입니다.' })
+      } else {
+        setToast({ type: 'error', message: '저장에 실패했습니다. 다시 시도해주세요.' })
+      }
+    })
+  }
+
   return (
     <div className="w-full max-w-lg space-y-6">
       <h1 className="text-2xl font-bold">설정</h1>
@@ -68,6 +90,65 @@ export function SettingsClient({
           {toast.message}
         </div>
       )}
+
+      {/* Profile section */}
+      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <User className="h-4 w-4 text-primary" />
+          <h2 className="font-medium">프로필</h2>
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <label htmlFor="displayName" className="text-sm font-medium">
+              표시 이름
+            </label>
+            <input
+              id="displayName"
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="리더보드에 표시될 이름"
+              maxLength={50}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="username" className="text-sm font-medium">
+              사용자명
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                @
+              </span>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) =>
+                  setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))
+                }
+                placeholder="영소문자·숫자·언더스코어"
+                maxLength={30}
+                className="w-full rounded-lg border border-border bg-background pl-7 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              영소문자, 숫자, 언더스코어(_)만 사용 가능
+            </p>
+          </div>
+
+          <button
+            onClick={handleSaveProfile}
+            disabled={profilePending}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary hover:bg-primary/90 px-4 py-2 text-sm font-medium text-primary-foreground transition-colors disabled:opacity-60"
+          >
+            {profilePending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            저장
+          </button>
+        </div>
+      </div>
 
       {/* Google Calendar section */}
       <div className="rounded-xl border border-border bg-card p-5 space-y-4">
@@ -129,7 +210,7 @@ export function SettingsClient({
         )}
       </div>
 
-      {/* Account section placeholder */}
+      {/* Account section */}
       <div className="rounded-xl border border-border bg-card p-5 space-y-3">
         <h2 className="font-medium">계정</h2>
         <div className="flex items-center justify-between">
