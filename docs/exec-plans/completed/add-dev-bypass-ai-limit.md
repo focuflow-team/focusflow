@@ -1,8 +1,8 @@
 ---
 name: add-dev-bypass-ai-limit
 description: DEV_BYPASS_EMAILS 환경변수로 특정 이메일의 AI 분석 횟수 제한 해제
-verification_status: draft
-last_verified: ~
+verification_status: verified
+last_verified: 2026-04-14
 owner: vljh246v
 branch: feat/add-dev-bypass-ai-limit
 ---

@@ -1,8 +1,8 @@
 ---
 name: fix-ai-tone-residual
 description: AI 인사이트 content에 남은 번역체·어색한 표현 금지 추가 (반대로, ~은 상태다, 앞을 열어줬다 등)
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-14
 owner: harness
 branch: refactor/fix-ai-tone-residual
 ---
