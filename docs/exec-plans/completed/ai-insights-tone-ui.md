@@ -1,7 +1,8 @@
 ---
 task_id: ai-insights-tone-ui
 title: AI 인사이트 톤 조정 및 카드 UI 개선
-status: in_progress
+status: abandoned
+last_verified: 2026-04-18
 ---
 
 ## 작업 범위

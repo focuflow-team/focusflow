@@ -1,7 +1,8 @@
 ---
 task_id: feature-ai-insights-quality
 title: AI 인사이트 품질 개선 및 UI 업데이트
-status: in_progress
+status: abandoned
+last_verified: 2026-04-18
 ---
 
 ## 작업 범위
