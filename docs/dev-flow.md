@@ -80,8 +80,10 @@ npm run dev
 
 `GitHub → Settings → Secrets and variables → Actions → New repository secret`
 
-7개 추가 필요 (기존 2개 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 는 이미 있음):
+9개 모두 추가 필요:
 
+- [ ] `NEXT_PUBLIC_SUPABASE_URL`
+- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - [ ] `NEXT_PUBLIC_APP_URL`
 - [ ] `NEXT_PUBLIC_PORTONE_STORE_ID`
 - [ ] `NEXT_PUBLIC_PORTONE_CHANNEL_KEY_CARD`
