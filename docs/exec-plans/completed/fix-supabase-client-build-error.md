@@ -1,7 +1,7 @@
 ---
 name: fix-supabase-client-build-error
 description: 빌드 타임 SSR에서 createClient()가 실행되어 Supabase 에러 발생 — 핸들러 내부로 이동
-verification_status: draft
+verification_status: verified
 last_verified: 2026-04-18
 owner: vljh246v
 branch: fix/fix-supabase-client-build-error
