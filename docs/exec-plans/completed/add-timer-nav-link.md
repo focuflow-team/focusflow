@@ -1,8 +1,8 @@
 ---
 name: add-timer-nav-link
 description: 헤더 네비게이션에 타이머 메뉴 항목 추가 — 로고 클릭 없이 바로 이동 가능하게
-verification_status: draft
-last_verified: 2026-04-15
+verification_status: verified
+last_verified: 2026-04-18
 owner: vljh246v
 branch: feat/add-timer-nav-link
 ---

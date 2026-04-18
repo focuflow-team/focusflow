@@ -17,7 +17,9 @@ ADR-0005의 5-step task lifecycle을 강제합니다.
 2. **Worktree + branch 생성** — `scripts/start-task.sh`
 3. **Exec-plan 작성** — 코드보다 먼저. 플랜 없으면 커밋 불가.
 4. **Worktree 안에서 구현 + 테스트**
-5. **Verify → Commit → Complete**
+5. **Verify → Commit**
+6. **Code Review** — `superpowers:requesting-code-review` 스킬로 AI 리뷰. 지적사항 수정 후 재커밋.
+7. **Complete**
 
 ---
 
@@ -225,9 +227,31 @@ Conventional Commits 필수. commit-msg hook이 검증합니다.
 
 ---
 
-## Step 6: Complete
+## Step 6: Code Review (생략 불가)
 
-검증 + 커밋 완료 후 바로 실행합니다 (GitHub PR 불필요):
+커밋 완료 후 **반드시** AI 코드 리뷰를 실행합니다:
+
+```
+Skill: superpowers:requesting-code-review
+```
+
+**리뷰 대상:** 이번 task에서 변경된 모든 `src/` 파일 (git diff로 확인)
+
+**리뷰 후 처리:**
+
+| 지적 유형        | 대응                                                        |
+| ---------------- | ----------------------------------------------------------- |
+| 버그·보안 취약점 | **반드시 수정** → 재커밋 → Step 5로 돌아가 verify 재실행    |
+| 코드 품질·가독성 | 수정 권장. 수정 않으면 exec-plan Open Questions에 이유 기록 |
+| 스타일·포매팅    | prettier/eslint가 이미 처리했으므로 무시 가능               |
+
+**건너뛸 수 없습니다.** 코드 리뷰 없이 Step 7로 진행하는 것은 금지입니다.
+
+---
+
+## Step 7: Complete
+
+검증 + 코드 리뷰 완료 후 바로 실행합니다 (GitHub PR 불필요):
 
 ```bash
 bash scripts/complete-task.sh <task-id>
@@ -240,7 +264,9 @@ bash scripts/complete-task.sh <task-id>
 3. exec-plan `active/` → `completed/` 이동, `last_verified` 업데이트
 4. worktree 제거
 
-**이 스크립트를 건너뛰지 않습니다.** `active/`는 실제로 진행 중인 작업만 반영해야 합니다.
+**⚠️ 이 스크립트를 건너뛰면 `active/`가 stale 상태로 누적됩니다.** 커밋 직후 즉시 실행하세요. 실수로 건너뛰었다면 다음 작업 전에 반드시 실행하세요.
+
+`docs/exec-plans/active/`에 진행 중이 아닌 파일이 남아 있는 것은 하네스 위반입니다.
 
 ---
 
@@ -288,7 +314,8 @@ exec-plan의 Approach 섹션을 수정하고 Revisions 섹션에 변경 내용�
 - worktree 안에서 현재 작업과 무관한 `docs/` 파일 수정 금지. 문서 변경은 별도 task.
 - Step 3 이전에 코드 작성 금지. 플랜 먼저.
 - verify 보고서 없이 PR 머지 금지.
-- `docs/exec-plans/active/*.md`를 stale 상태로 방치 금지.
+- **Step 6 (Code Review) 없이 Step 7 (Complete) 실행 금지.** "작은 변경", "명백한 코드" 등의 이유로 건너뛰는 것도 금지.
+- **`docs/exec-plans/active/*.md`를 stale 상태로 방치 금지.** 작업이 끝났으면 그 자리에서 `complete-task.sh`를 실행하세요. 나중에 하겠다는 생각은 누적의 시작입니다.
 - 기존 나쁜 코드를 발견했을 때 현재 task 범위에서 슬쩍 수정 금지. `docs/agent-failures.md`에 기록하고 별도 task로.
 
 ---

@@ -1,7 +1,8 @@
 ---
 task_id: verify-ai-insights-skill
 title: verify-ai-insights 스킬 생성
-status: in_progress
+status: abandoned
+last_verified: 2026-04-18
 ---
 
 ## 작업 범위
