@@ -1,3 +1,11 @@
+---
+name: Dev Flow / CI-CD 개선 구현 플랜
+description: alpha/beta/prod 환경 분리, CI blocking 전환, 환경변수 관리 체계화 구현 플랜
+verification_status: draft
+last_verified: 2026-04-18
+owner: harness
+---
+
 # Dev Flow / CI-CD 개선 구현 플랜
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

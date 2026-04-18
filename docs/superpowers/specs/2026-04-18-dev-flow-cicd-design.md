@@ -1,8 +1,12 @@
-# Dev Flow / CI-CD 개선 설계
+---
+name: Dev Flow / CI-CD 개선 설계
+description: alpha/beta/prod 환경 분리, CI blocking 전환, 환경변수 체계화 설계 문서
+verification_status: draft
+last_verified: 2026-04-18
+owner: harness
+---
 
-**날짜**: 2026-04-18  
-**상태**: 승인됨  
-**작성**: 브레인스토밍 세션
+# Dev Flow / CI-CD 개선 설계
 
 ---
 
