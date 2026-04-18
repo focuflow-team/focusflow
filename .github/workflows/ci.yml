@@ -25,24 +25,28 @@ jobs:
 
       - name: Prettier (check)
         run: npx prettier --check .
-        continue-on-error: true
 
-      - name: ESLint (non-blocking until TD-007 resolved)
+      - name: ESLint
         run: npm run lint
-        continue-on-error: true
 
       - name: dependency-cruiser (ADR-0001/0003 경계 강제)
         run: npm run depcruise
 
       - name: Drift detector
         run: npm run drift
-        continue-on-error: true
 
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_PORTONE_STORE_ID: ${{ secrets.NEXT_PUBLIC_PORTONE_STORE_ID }}
+          NEXT_PUBLIC_PORTONE_CHANNEL_KEY_CARD: ${{ secrets.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_CARD }}
+          NEXT_PUBLIC_PORTONE_CHANNEL_KEY_KAKAOPAY: ${{ secrets.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_KAKAOPAY }}
+          NEXT_PUBLIC_PORTONE_CHANNEL_KEY_NAVERPAY: ${{ secrets.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_NAVERPAY }}
+          NEXT_PUBLIC_PORTONE_CHANNEL_KEY_TOSSPAY: ${{ secrets.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_TOSSPAY }}
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
 
   escalation-check:
     # 결제·인증·마이그레이션 경계 변경 시 라벨 권고
