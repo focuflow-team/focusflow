@@ -23,6 +23,7 @@
     "start-task": "bash scripts/start-task.sh",
     "verify-task": "bash scripts/verify-task.sh",
     "complete-task": "bash scripts/complete-task.sh",
+    "reset-ai-usage": "bash scripts/reset-ai-usage.sh",
     "prepare": "husky"
   },
   "lint-staged": {
