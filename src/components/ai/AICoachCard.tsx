@@ -15,8 +15,15 @@ interface AICoachCardProps {
   subscriptionTier: 'free' | 'pro' | 'team'
 }
 
-function InsightContent({ content }: { content: string }) {
-  const lines = content.split('\n').filter((l) => l.trim().length > 0)
+export function InsightContent({ content }: { content: string }) {
+  let lines = content.split('\n').filter((l) => l.trim().length > 0)
+  if (lines.length <= 1) {
+    const fallback = content
+      .split(/(?<=다\.)(?=\s)/)
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0)
+    if (fallback.length >= 3) lines = fallback
+  }
   if (lines.length <= 1) {
     return <p className="text-xs leading-[1.75] text-foreground/80">{content}</p>
   }
